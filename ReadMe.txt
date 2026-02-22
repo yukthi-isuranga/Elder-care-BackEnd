@@ -56,3 +56,10 @@ Then install dependencies:
     ├── tsconfig.json            // TypeScript configuration
     ├── .eslintrc.js             // ESLint configuration
     └── .prettierrc              // Prettier configuration
+
+
+npm install prisma @prisma/client bcrypt jsonwebtoken
+npm install -D @types/bcrypt @types/jsonwebtoken
+npx prisma init
+npx prisma migrate dev --name init
+npx prisma generate
