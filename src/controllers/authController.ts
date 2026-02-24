@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/prisma';
 import bcrypt from 'bcrypt';
+import { generateToken } from '../../prisma/utils/genarateToken';
 
 export const registerController = async (
   req: Request,
@@ -25,7 +26,7 @@ export const registerController = async (
   const hashedPassword = await bcrypt.hash(password, salt);
 
   // Create new user
-  await prisma.user.create({
+  const newUser = await prisma.user.create({
     data: {
       name,
       email,
@@ -34,5 +35,11 @@ export const registerController = async (
     },
   });
 
-  res.json({ message: 'User registered successfully' });
+  // Generate JWT token and set it in the cookie
+
+  const token = generateToken(newUser.id, res);
+
+  res
+    .status(201)
+    .json({ status: 'User registered successfully', user: newUser, token });
 };
