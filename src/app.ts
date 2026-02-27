@@ -1,8 +1,11 @@
 import express from 'express';
 
-import itemRoutes from './routes/itemRoutes';
 import { errorHandler } from './middlewares/errorHandler';
+
+//Routes
+import itemRoutes from './routes/itemRoutes';
 import authRoutes from './routes/authRoutes';
+import adminRoutes from './routes/adminRoutes';
 
 const app = express();
 
@@ -11,7 +14,11 @@ app.use(express.json());
 // Routes
 app.use('/api/items', itemRoutes);
 
+//user Registation CARETAKER , CAREGIVER ,ADMIN
 app.use('/auth', authRoutes);
+
+//Get User Admin
+app.use('/admin', adminRoutes);
 
 // Global error handler (should be after routes)
 app.use(errorHandler);
