@@ -7,6 +7,7 @@ import itemRoutes from './routes/itemRoutes';
 import authRoutes from './routes/authRoutes';
 import adminRoutes from './routes/adminRoutes';
 import caretakerRoutes from './routes/caretakerRoutes';
+import caregiverRoutes from './routes/caregiverRoutes';
 
 const app = express();
 
@@ -23,6 +24,9 @@ app.use('/admin', adminRoutes);
 
 //Get CARETAKER Users
 app.use('/caretaker', caretakerRoutes);
+
+//Get CAREGIVER Users
+app.use('/caregiver', caregiverRoutes);
 
 // Global error handler (should be after routes)
 app.use(errorHandler);
