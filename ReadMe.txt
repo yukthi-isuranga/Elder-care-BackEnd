@@ -63,3 +63,10 @@ npm install -D @types/bcrypt @types/jsonwebtoken
 npx prisma init
 npx prisma migrate dev --name init
 npx prisma generate
+
+
+
+
+1.create Users
+2.add middle ware to token authenticate
+3. login log out functions
