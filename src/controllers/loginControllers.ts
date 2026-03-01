@@ -38,3 +38,16 @@ export const logInController = async (
     .status(200)
     .json({ message: 'Login successful', user: userWithoutPassword, token });
 };
+
+export const logoutController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  res.cookie('jwtToken', '', {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+
+  res.status(200).json({ message: 'Logged out successfully' });
+};
