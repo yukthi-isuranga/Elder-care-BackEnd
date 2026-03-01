@@ -13,6 +13,8 @@ const app = express();
 
 app.use(express.json());
 
+app.use(errorHandler);
+
 // Routes
 app.use('/api/items', itemRoutes);
 
@@ -29,6 +31,5 @@ app.use('/caretaker', caretakerRoutes);
 app.use('/caregiver', caregiverRoutes);
 
 // Global error handler (should be after routes)
-app.use(errorHandler);
 
 export default app;

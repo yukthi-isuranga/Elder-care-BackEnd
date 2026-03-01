@@ -70,3 +70,16 @@ npx prisma generate
 1.create Users
 2.add middle ware to token authenticate
 3. login log out functions
+
+Relation 1: Caregiver owns profile
+User (CAREGIVER role)
+    ↓ (1:1)
+Caregiver profile
+
+Relation 2: Admin approves caregivers
+User (ADMIN role)
+    ↓ (1:Many)
+Caregivers approved by that admin
+
+
+npx prisma migrate dev --name Caregiver_model
