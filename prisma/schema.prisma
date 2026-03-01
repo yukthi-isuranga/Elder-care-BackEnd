@@ -20,10 +20,108 @@ enum Role {
 }
 
 model User {
-  id        String   @id @default(cuid()) //CUID (Collision-Resistant Unique Identifier)
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(CARETAKER)
-  createdAt DateTime @default(now())
+  id                 String      @id @default(cuid()) //CUID (Collision-Resistant Unique Identifier)
+  name               String
+  email              String      @unique
+  password           String
+  role               Role        @default(CARETAKER)
+  createdAt          DateTime    @default(now())
+  caregiverProfile   Caregiver?  @relation("CaregiverProfile") // 1️⃣ If user is a caregiver
+  approvedCaregivers Caregiver[] @relation("ApprovedBy") // 2️⃣ If user is an admin approving caregivers
+}
+
+model Caregiver {
+  id               String              @id @default(uuid())
+  userId           String              @unique
+  firstName        String
+  middleName       String?
+  lastName         String
+  nameWithInitials String?
+  phone            String
+  nic              String
+  gender           String
+  dateOfBirth      DateTime
+  address          String
+  district         District
+  experienceYears  Int
+  bio              String?
+  hourlyRate       Float?
+  status           CaregiverStatus     @default(DRAFT)
+  adminNote        String?
+  approvedById     String?
+  documents        CaregiverDocument[]
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  user       User  @relation("CaregiverProfile", fields: [userId], references: [id])
+  approvedBy User? @relation("ApprovedBy", fields: [approvedById], references: [id])
+}
+
+model CaregiverDocument {
+  id          String       @id @default(uuid())
+  caregiverId String
+  type        DocumentType
+  fileUrl     String
+  verified    Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  caregiver   Caregiver    @relation(fields: [caregiverId], references: [id])
+}
+
+enum CaregiverStatus {
+  DRAFT // profile not submitted yet
+  PENDING // waiting admin review
+  APPROVED // admin approved
+  REJECTED // rejected permanently
+  CHANGES_REQUIRED // admin requested changes
+}
+
+enum DocumentType {
+  NIC
+  CERTIFICATE
+  POLICE_REPORT
+}
+
+enum District {
+  // Western Province
+  COLOMBO
+  GAMPAHA
+  KALUTARA
+
+  // Central Province
+  KANDY
+  MATALE
+  NUWARA_ELIYA
+
+  // Southern Province
+  GALLE
+  MATARA
+  HAMBANTOTA
+
+  // Northern Province
+  JAFFNA
+  KILINOCHCHI
+  MANNAR
+  MULLAITIVU
+  VAVUNIYA
+
+  // Eastern Province
+  TRINCOMALEE
+  BATTICALOA
+  AMPARA
+
+  // North Western Province
+  KURUNEGALA
+  PUTTALAM
+
+  // North Central Province
+  ANURADHAPURA
+  POLONNARUWA
+
+  // Uva Province
+  BADULLA
+  MONARAGALA
+
+  // Sabaragamuwa Province
+  RATNAPURA
+  KEGALLE
 }
