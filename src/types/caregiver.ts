@@ -13,12 +13,66 @@ export type CaregiverBasicInfo = {
   approvedById: string;
 };
 
+// =============================
+// PROFESSIONAL INFO
+// =============================
 export type CaregiverProfessionalInfo = {
   experienceYears: number;
   bio?: string;
   hourlyRate?: number;
+  qualifications?: string; // NEW
+  certifications?: string; // NEW
+  specialization?: string; // NEW
+  languagesSpoken?: string; // NEW
 };
 
+// =============================
+// SKILL FLAGS
+// =============================
+export type CaregiverSkills = {
+  canHandleDementia?: boolean; // NEW
+  canHandleBedridden?: boolean; // NEW
+  canHandleWheelchair?: boolean; // NEW
+  canProvidePhysiotherapy?: boolean; // NEW
+  canAdministerMedication?: boolean; // NEW
+  canHandleEmergency?: boolean; // NEW
+};
+
+// =============================
+// AVAILABILITY
+// =============================
+export type CaregiverAvailability = {
+  isAvailable?: boolean; // NEW
+  availableFrom?: string; // NEW - ISO string
+  availableTo?: string; // NEW - ISO string
+  availableForNight?: boolean; // NEW
+  availableForFullTime?: boolean; // NEW
+};
+
+// =============================
+// SAFETY & VERIFICATION
+// =============================
+export type CaregiverVerification = {
+  isIdentityVerified?: boolean; // NEW - admin controlled
+  isBackgroundChecked?: boolean; // NEW - admin controlled
+  backgroundCheckDate?: string; // NEW - ISO string
+  emergencyContactName?: string; // NEW
+  emergencyContactPhone?: string; // NEW
+};
+
+// =============================
+// PERFORMANCE
+// =============================
+export type CaregiverPerformance = {
+  averageRating?: number; // NEW - calculated field
+  totalReviews?: number; // NEW - calculated field
+  totalCompletedJobs?: number; // NEW - calculated field
+  isActive?: boolean; // NEW - soft delete flag
+};
+
+// =============================
+// ADDRESS
+// =============================
 export type CaregiverAddress = {
   // line1: string;
   // line2?: string;
@@ -28,17 +82,26 @@ export type CaregiverAddress = {
   // postalCode?: string;
 };
 
+// =============================
+// DOCUMENTS
+// =============================
 export type CaregiverDocument = {
   type: 'NIC' | 'CERTIFICATE' | 'POLICE_REPORT';
   fileUrl: string;
 };
 
+// =============================
+// CREATE REQUEST
+// =============================
 export type CaregiverCreateRequest = CaregiverBasicInfo &
   CaregiverProfessionalInfo &
+  CaregiverSkills & // NEW
+  CaregiverPerformance & //NEW
+  CaregiverAvailability & // NEW
+  CaregiverVerification & // NEW
   CaregiverAddress & {
     documents?: CaregiverDocument[];
   };
-
 export enum District {
   // Western Province
   COLOMBO = 'COLOMBO',

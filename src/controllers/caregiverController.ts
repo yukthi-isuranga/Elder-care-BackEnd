@@ -51,6 +51,54 @@ export const careGiverProfileController = async (
         status: data.status,
         adminNote: data.adminNote,
         approvedById: data.approvedById,
+
+        // =============================
+        // PROFESSIONAL DETAILS
+        // =============================
+        qualifications: data.qualifications, // NEW
+        certifications: data.certifications, // NEW
+        specialization: data.specialization, // NEW
+        languagesSpoken: data.languagesSpoken, // NEW
+
+        // =============================
+        // SKILL FLAGS
+        // =============================
+        canHandleDementia: data.canHandleDementia ?? false, // NEW
+        canHandleBedridden: data.canHandleBedridden ?? false, // NEW
+        canHandleWheelchair: data.canHandleWheelchair ?? false, // NEW
+        canProvidePhysiotherapy: data.canProvidePhysiotherapy ?? false, // NEW
+        canAdministerMedication: data.canAdministerMedication ?? false, // NEW
+        canHandleEmergency: data.canHandleEmergency ?? false, // NEW
+
+        // =============================
+        // AVAILABILITY
+        // =============================
+        isAvailable: data.isAvailable ?? true, // NEW
+        availableFrom: data.availableFrom, // NEW
+        availableTo: data.availableTo, // NEW
+        availableForNight: data.availableForNight ?? false, // NEW
+        availableForFullTime: data.availableForFullTime ?? false, // NEW
+
+        // =============================
+        // VERIFICATION & SAFETY
+        // =============================
+        isIdentityVerified: data.isIdentityVerified ?? false, // NEW
+        isBackgroundChecked: data.isBackgroundChecked ?? false, // NEW
+        backgroundCheckDate: data.backgroundCheckDate, // NEW
+        emergencyContactName: data.emergencyContactName, // NEW
+        emergencyContactPhone: data.emergencyContactPhone, // NEW
+
+        // =============================
+        // RATING & PERFORMANCE (admin controlled)
+        // =============================
+        averageRating: data.averageRating ?? 0, // NEW
+        totalReviews: data.totalReviews ?? 0, // NEW
+        totalCompletedJobs: data.totalCompletedJobs ?? 0, // NEW
+
+        // =============================
+        // SYSTEM
+        // =============================
+        isActive: data.isActive ?? true, // NEW
       },
     });
 
