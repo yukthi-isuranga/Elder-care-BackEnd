@@ -3,10 +3,14 @@ export type CaregiverBasicInfo = {
   firstName: string;
   middleName?: string;
   lastName: string;
-  initials?: string;
+  nameWithInitials?: string;
   phone: string;
-  gender: 'MALE' | 'FEMALE' | 'OTHER';
+  gender: 'MALE' | 'FEMALE';
   dateOfBirth: string; // ISO string
+  nic: string;
+  status: CaregiverStatus;
+  adminNote: string;
+  approvedById: string;
 };
 
 export type CaregiverProfessionalInfo = {
@@ -16,11 +20,12 @@ export type CaregiverProfessionalInfo = {
 };
 
 export type CaregiverAddress = {
-  line1: string;
-  line2?: string;
-  district: string;
-  province: string;
-  postalCode?: string;
+  // line1: string;
+  // line2?: string;
+  address: string;
+  district: District;
+  // province: string;
+  // postalCode?: string;
 };
 
 export type CaregiverDocument = {
