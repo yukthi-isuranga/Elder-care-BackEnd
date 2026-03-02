@@ -19,6 +19,11 @@ enum Role {
   ADMIN
 }
 
+enum Gender {
+  MALE
+  FEMALE
+}
+
 model User {
   id                 String      @id @default(cuid()) //CUID (Collision-Resistant Unique Identifier)
   name               String
@@ -28,6 +33,7 @@ model User {
   createdAt          DateTime    @default(now())
   caregiverProfile   Caregiver?  @relation("CaregiverProfile") // 1️⃣ If user is a caregiver
   approvedCaregivers Caregiver[] @relation("ApprovedBy") // 2️⃣ If user is an admin approving caregivers
+  caretakerProfile   Caretaker?  @relation("caretakerProfile")
 }
 
 model Caregiver {
@@ -38,8 +44,8 @@ model Caregiver {
   lastName         String
   nameWithInitials String?
   phone            String
-  nic              String
-  gender           String
+  nic              String              @unique
+  gender           Gender
   dateOfBirth      DateTime
   address          String
   district         District
@@ -52,6 +58,54 @@ model Caregiver {
   documents        CaregiverDocument[]
   createdAt        DateTime            @default(now())
   updatedAt        DateTime            @updatedAt
+
+  // =============================
+  // PROFESSIONAL DETAILS
+  // =============================
+  qualifications  String? // NEW - NVQ, Diploma, Nursing etc
+  certifications  String? // NEW - First Aid, CPR, etc
+  specialization  String? // NEW - Dementia care, Bedridden care
+  languagesSpoken String? // NEW - Sinhala, Tamil, English
+
+  // =============================
+  // SKILL FLAGS (for matching)
+  // =============================
+  canHandleDementia       Boolean @default(false) // NEW
+  canHandleBedridden      Boolean @default(false) // NEW
+  canHandleWheelchair     Boolean @default(false) // NEW
+  canProvidePhysiotherapy Boolean @default(false) // NEW
+  canAdministerMedication Boolean @default(false) // NEW
+  canHandleEmergency      Boolean @default(false) // NEW
+
+  // =============================
+  // AVAILABILITY
+  // =============================
+  isAvailable          Boolean   @default(true) // NEW
+  availableFrom        DateTime? // NEW
+  availableTo          DateTime? // NEW
+  availableForNight    Boolean   @default(false) // NEW
+  availableForFullTime Boolean   @default(false) // NEW
+
+  // =============================
+  // VERIFICATION & SAFETY
+  // =============================
+  isIdentityVerified    Boolean   @default(false) // NEW
+  isBackgroundChecked   Boolean   @default(false) // NEW
+  backgroundCheckDate   DateTime? // NEW
+  emergencyContactName  String? // NEW
+  emergencyContactPhone String? // NEW
+
+  // =============================
+  // RATING & PERFORMANCE
+  // =============================
+  averageRating      Float? // NEW - calculated from reviews
+  totalReviews       Int    @default(0) // NEW
+  totalCompletedJobs Int    @default(0) // NEW
+
+  // =============================
+  // SYSTEM
+  // =============================
+  isActive Boolean @default(true) // NEW - soft delete control
 
   user       User  @relation("CaregiverProfile", fields: [userId], references: [id])
   approvedBy User? @relation("ApprovedBy", fields: [approvedById], references: [id])
@@ -124,4 +178,146 @@ enum District {
   // Sabaragamuwa Province
   RATNAPURA
   KEGALLE
+}
+
+model Caretaker {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  // Personal Details
+  firstName        String
+  middleName       String?
+  lastName         String
+  nameWithInitials String?
+  nic              String?
+  dateOfBirth      DateTime?
+  gender           Gender
+
+  // Contact Details
+  phone          String
+  secondaryPhone String?
+  addressLine1   String
+  addressLine2   String?
+  city           String
+  district       District
+  postalCode     String?
+
+  // Relationship & Responsibility
+  relationshipToElder   RelationshipType
+  relationshitTypeOther String?
+  isPrimaryContact      Boolean          @default(true)
+
+  // Emergency Contact
+  emergencyContactName     String?
+  emergencyContactPhone    String?
+  emergencyContactRelation String?
+
+  // System Fields
+  isVerified Boolean @default(false)
+  notes      String?
+
+  // Relations
+  elders Elder[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  //  user       User  @relation("CaregiverProfile", fields: [userId], references: [id])
+  user      User     @relation("caretakerProfile", fields: [userId], references: [id])
+}
+
+enum RelationshipType {
+  SON
+  DAUGHTER
+  SPOUSE
+  RELATIVE
+  LEGAL_GUARDIAN
+  OTHER
+}
+
+model Elder {
+  id          String @id @default(uuid())
+  caretakerId String
+
+  // -----------------------
+  // Basic Identity
+  // -----------------------
+  firstName   String
+  middleName  String?
+  lastName    String
+  gender      Gender
+  dateOfBirth DateTime
+  nic         String?
+  bloodGroup  String?
+
+  // -----------------------
+  // Physical Information
+  // -----------------------
+  heightCm      Float?
+  weightKg      Float?
+  mobilityLevel MobilityLevel
+  visionIssues  Boolean       @default(false)
+  hearingIssues Boolean       @default(false)
+
+  // -----------------------
+  // Medical Profile
+  // -----------------------
+  chronicDiseases    String? // Diabetes, Hypertension etc
+  allergies          String?
+  currentMedications String?
+  pastSurgeries      String?
+  medicalNotes       String?
+
+  // -----------------------
+  // Cognitive & Mental
+  // -----------------------
+  hasDementia    Boolean @default(false)
+  hasAlzheimer   Boolean @default(false)
+  hasDepression  Boolean @default(false)
+  cognitiveNotes String?
+
+  // -----------------------
+  // Care Requirements
+  // -----------------------
+  requiresFullTimeCare  Boolean @default(false)
+  requiresNightCare     Boolean @default(false)
+  requiresPhysiotherapy Boolean @default(false)
+  requiresSpecialDiet   Boolean @default(false)
+  specialNeeds          String?
+
+  // -----------------------
+  // Risk & Monitoring
+  // -----------------------
+  fallRiskLevel      RiskLevel @default(LOW)
+  requiresMonitoring Boolean   @default(false)
+
+  // -----------------------
+  // Emergency Info
+  // -----------------------
+  emergencyDoctorName  String?
+  emergencyDoctorPhone String?
+  preferredHospital    String?
+
+  // -----------------------
+  // System
+  // -----------------------
+  isActive Boolean @default(true)
+  notes    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  caretaker Caretaker @relation(fields: [caretakerId], references: [id])
+}
+
+enum MobilityLevel {
+  INDEPENDENT
+  NEEDS_ASSISTANCE
+  WHEELCHAIR
+  BEDRIDDEN
+}
+
+enum RiskLevel {
+  LOW
+  MEDIUM
+  HIGH
 }
