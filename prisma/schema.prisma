@@ -204,7 +204,7 @@ model Caretaker {
 
   // Relationship & Responsibility
   relationshipToElder   RelationshipType
-  relationshitTypeOther String?
+  relationshipTypeOther String?
   isPrimaryContact      Boolean          @default(true)
 
   // Emergency Contact
