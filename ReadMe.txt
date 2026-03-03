@@ -84,7 +84,8 @@ Caregivers approved by that admin
 
 npx prisma migrate dev --name Caregiver_model
 
-npx prisma migrate dev --name Caretaker _model_and_Elder_model
+npx prisma migrate dev --name Caretaker_model_and_Elder_model
 
 npx prisma migrate reset
 
+npx prisma migrate dev --name Caretaker_model_Attribute_name_change
