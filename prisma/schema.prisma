@@ -247,7 +247,7 @@ model Elder {
   gender      Gender
   dateOfBirth DateTime
   nic         String?
-  bloodGroup  String?
+  bloodGroup  BloodGroup?
 
   // -----------------------
   // Physical Information
@@ -320,4 +320,15 @@ enum RiskLevel {
   LOW
   MEDIUM
   HIGH
+}
+
+enum BloodGroup {
+  A_POSITIVE
+  A_NEGATIVE
+  B_POSITIVE
+  B_NEGATIVE
+  AB_POSITIVE
+  AB_NEGATIVE
+  O_POSITIVE
+  O_NEGATIVE
 }
