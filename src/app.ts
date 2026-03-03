@@ -24,11 +24,11 @@ app.use('/auth', authRoutes);
 //Get User Admin
 app.use('/admin', adminRoutes);
 
-//Get CARETAKER Users
-app.use('/caretaker', caretakerRoutes);
-
 //Get CAREGIVER Users
 app.use('/caregiver', caregiverRoutes);
+
+//Get CARETAKER Users
+app.use('/caretaker', caretakerRoutes);
 
 // Global error handler (should be after routes)
 
