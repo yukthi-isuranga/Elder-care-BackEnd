@@ -89,3 +89,6 @@ npx prisma migrate dev --name Caretaker_model_and_Elder_model
 npx prisma migrate reset
 
 npx prisma migrate dev --name Caretaker_model_Attribute_name_change
+
+
+npx prisma migrate dev --name Elder_model_BloodGroup_Attribute_change

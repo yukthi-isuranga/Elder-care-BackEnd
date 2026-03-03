@@ -1,8 +1,5 @@
 import { Router } from 'express';
-import {
-  caregiverController,
-  careGiverProfileController,
-} from '../controllers/caregiverController';
+import { careGiverProfileController } from '../controllers/caregiverController';
 import { caregiverAuthMiddleware } from '../middlewares/caregiverAuthMiddleware';
 import { validateRequest } from '../middlewares/validateRequests';
 import { caregiverProfileSchema } from '../validators/caregiverProfileValidator';
@@ -17,7 +14,5 @@ router.post(
   validateRequest(caregiverProfileSchema),
   careGiverProfileController,
 );
-
-router.get('/', caregiverController);
 
 export default router;
