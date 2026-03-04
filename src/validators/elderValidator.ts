@@ -6,11 +6,13 @@ import {
   RiskLevel,
 } from '../generated/prisma/enums';
 
-export const elderSchema = z.object({
+const elderSchema = z.object({
   // -----------------------
   // Basic Identity
   // -----------------------
-  firstName: z.string().min(1, 'First name is required'),
+  firstName: z
+    .string({ error: 'First name is required, not nullable' })
+    .min(1, 'First name must be more than 1 charactor'),
   middleName: z
     .string()
     .min(1, 'Middle name must more than 1 letter')
@@ -160,3 +162,7 @@ export const elderSchema = z.object({
   // -----------------------
   notes: z.string({ error: 'Error in notes' }).optional().nullable(),
 });
+
+export const elderCreateSchema = elderSchema;
+
+export const elderUpdateSchema = elderSchema.partial();

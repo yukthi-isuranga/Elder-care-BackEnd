@@ -111,3 +111,60 @@ export const elderController = async (
     next(error); // let global error handler handle the rest
   }
 };
+
+interface ElderParams {
+  id: string;
+}
+export const elderUpdateController = async (
+  req: Request<ElderParams> & CareTakerUserData,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.params;
+    const careTakerFtomToken = req.user;
+    const data = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: 'Elder ID is null' });
+    }
+    // return res.status(400).json({ message: careTakerFtomToken?.id });
+    // To find Caretaker
+    const careTakerData = await prisma.caretaker.findUnique({
+      where: {
+        userId: careTakerFtomToken?.id,
+      },
+    });
+    if (!careTakerData) {
+      return res
+        .status(400)
+        .json({ message: 'CareTakerData Not Found...!!!', careTakerFtomToken });
+    }
+    // To find Previously created Elder
+    const elderData = await prisma.elder.findUnique({
+      where: { id },
+    });
+
+    if (!elderData) {
+      return res.status(400).json({ message: 'Elder ID Not Found...!!!' });
+    }
+
+    if (careTakerData.userId === elderData.caretakerId) {
+      return res
+        .status(400)
+        .json({ message: 'This is not Caretakes Elder Data...!!!' });
+    }
+
+    const updatedData = await prisma.elder.update({
+      where: { id: elderData.id },
+      data: data,
+    });
+
+    return res.status(200).json({
+      message: `${elderData.firstName} Data Updated...!!!`,
+      updatedData,
+    });
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
