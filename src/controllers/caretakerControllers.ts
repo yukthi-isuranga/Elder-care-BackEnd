@@ -116,9 +116,26 @@ export const editCareTakerProfileController = async (
   res: Response,
   next: NextFunction,
 ) => {
-  const user = req.user;
+  try {
+    const userdata = req.user;
+    const data = req.body;
 
-  return res
-    .status(200)
-    .json({ message: `${user?.name} - route works....!!!` });
+    // find and Update Caretaker Profile
+    const careTakerData = await prisma.caretaker.update({
+      where: { userId: userdata?.id },
+      data,
+    });
+
+    if (!careTakerData) {
+      return res
+        .status(400)
+        .json({ message: `${userdata?.name} - Data Not Updated....!!!` });
+    } else
+      return res.status(200).json({
+        message: `${userdata?.name} - Updated Profile....!!!`,
+        careTakerData,
+      });
+  } catch (error) {
+    return res.status(400).json({ message: `${error} ` });
+  }
 };
