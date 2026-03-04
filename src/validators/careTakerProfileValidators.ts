@@ -3,7 +3,7 @@ import { District } from '../types/caregiver';
 import { RelationshipType } from '../generated/prisma/enums';
 import { dateOfBirthSchema } from './caregiverProfileValidator';
 
-export const careTakerProfileSchema = z.object({
+const careTakerProfileSchema = z.object({
   firstName: z.string().min(1, 'Fist name is required'),
   middleName: z.string().optional(),
   lastName: z.string().min(1, 'Last name is required'),
@@ -63,3 +63,7 @@ export const careTakerProfileSchema = z.object({
   }),
   notes: z.string().min(1, 'Error in Notes').optional(),
 });
+
+export const createCareTakerProfileSchema = careTakerProfileSchema;
+
+export const editCareTakerProfileSchema = careTakerProfileSchema.partial();

@@ -236,7 +236,7 @@ enum RelationshipType {
 
 model Elder {
   id          String @id @default(uuid())
-  caretakerId String
+  caretakerId String @unique
 
   // -----------------------
   // Basic Identity

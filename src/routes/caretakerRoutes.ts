@@ -2,10 +2,14 @@ import { Router } from 'express';
 import {
   caretakerController,
   caretakerProfileController,
+  editCareTakerProfileController,
 } from '../controllers/caretakerControllers';
 import { caretakerAuthMiddleware } from '../middlewares/caretakerAuthMiddleware';
 import { validateRequest } from '../middlewares/validateRequests';
-import { careTakerProfileSchema } from '../validators/careTakerProfileValidators';
+import {
+  createCareTakerProfileSchema,
+  editCareTakerProfileSchema,
+} from '../validators/careTakerProfileValidators';
 import {
   elderController,
   elderUpdateController,
@@ -21,11 +25,18 @@ router.use(caretakerAuthMiddleware);
 
 router.get('/', caretakerController);
 
-//, validateRequest(careTakerProfileSchema)
+// Add CareTaker
 router.post(
   '/profile',
-  validateRequest(careTakerProfileSchema),
+  validateRequest(createCareTakerProfileSchema),
   caretakerProfileController,
+);
+
+//Edit CareTaker
+router.patch(
+  '/profile',
+  validateRequest(editCareTakerProfileSchema),
+  editCareTakerProfileController,
 );
 
 // Adding Elders
@@ -33,7 +44,7 @@ router.post('/elder', validateRequest(elderCreateSchema), elderController);
 
 // Edit Elders
 router.patch(
-  '/elder/:id',
+  '/elder',
   validateRequest(elderUpdateSchema),
   elderUpdateController,
 );
