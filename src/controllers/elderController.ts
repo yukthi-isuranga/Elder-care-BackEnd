@@ -121,35 +121,34 @@ export const elderUpdateController = async (
   next: NextFunction,
 ) => {
   try {
-    const { id } = req.params;
-    const careTakerFtomToken = req.user;
+    if (!req.user) {
+      return res.status(400).json({ message: 'Headders are not found...!!!' });
+    }
+    const userFtomToken = req.user;
     const data = req.body;
 
-    if (!id) {
-      return res.status(400).json({ message: 'Elder ID is null' });
-    }
-    // return res.status(400).json({ message: careTakerFtomToken?.id });
-    // To find Caretaker
+    //Find CareTaker Using UserID
     const careTakerData = await prisma.caretaker.findUnique({
       where: {
-        userId: careTakerFtomToken?.id,
+        userId: userFtomToken.id,
       },
     });
     if (!careTakerData) {
       return res
         .status(400)
-        .json({ message: 'CareTakerData Not Found...!!!', careTakerFtomToken });
+        .json({ message: 'CareTakerData Not Found...!!!', userFtomToken });
     }
-    // To find Previously created Elder
+
+    // Find Elder using CareTaker ID
     const elderData = await prisma.elder.findUnique({
-      where: { id },
+      where: { caretakerId: careTakerData.id },
     });
 
     if (!elderData) {
-      return res.status(400).json({ message: 'Elder ID Not Found...!!!' });
+      return res.status(400).json({ message: 'Elder is Not Found...!!!' });
     }
 
-    if (careTakerData.userId === elderData.caretakerId) {
+    if (careTakerData.id !== elderData.caretakerId) {
       return res
         .status(400)
         .json({ message: 'This is not Caretakes Elder Data...!!!' });

@@ -110,3 +110,15 @@ export const caretakerProfileController = async (
     next(error); // let global error handler handle the rest
   }
 };
+
+export const editCareTakerProfileController = async (
+  req: CareTakerUserData,
+  res: Response,
+  next: NextFunction,
+) => {
+  const user = req.user;
+
+  return res
+    .status(200)
+    .json({ message: `${user?.name} - route works....!!!` });
+};
