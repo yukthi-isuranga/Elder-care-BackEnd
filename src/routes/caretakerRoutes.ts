@@ -6,8 +6,14 @@ import {
 import { caretakerAuthMiddleware } from '../middlewares/caretakerAuthMiddleware';
 import { validateRequest } from '../middlewares/validateRequests';
 import { careTakerProfileSchema } from '../validators/careTakerProfileValidators';
-import { elderController } from '../controllers/elderController';
-import { elderSchema } from '../validators/elderValidator';
+import {
+  elderController,
+  elderUpdateController,
+} from '../controllers/elderController';
+import {
+  elderCreateSchema,
+  elderUpdateSchema,
+} from '../validators/elderValidator';
 
 const router = Router();
 
@@ -23,6 +29,13 @@ router.post(
 );
 
 // Adding Elders
-router.post('/elder', validateRequest(elderSchema), elderController);
+router.post('/elder', validateRequest(elderCreateSchema), elderController);
+
+// Edit Elders
+router.patch(
+  '/elder/:id',
+  validateRequest(elderUpdateSchema),
+  elderUpdateController,
+);
 
 export default router;
