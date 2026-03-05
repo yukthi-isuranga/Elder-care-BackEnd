@@ -40,3 +40,26 @@ export const adminGetAllCtController = async (
     return res.status(400).json({ error });
   }
 };
+
+export const adminGetAllCgController = async (
+  req: AdminUserData,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userData = req.user;
+
+    const allCaraTakersData = await prisma.caregiver.findMany();
+
+    if (!allCaraTakersData) {
+      return res.status(400).json({ message: 'No data Found...' });
+    }
+
+    return res.status(200).json({
+      message: `${userData?.name} -${userData?.email}  Admin Get all CareGivers....works....`,
+      allCaraTakersData,
+    });
+  } catch (error) {
+    return res.status(400).json({ error });
+  }
+};
