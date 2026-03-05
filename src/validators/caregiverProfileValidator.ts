@@ -1,33 +1,38 @@
 import { z } from 'zod';
-import { District, CaregiverStatus } from '../types/caregiver';
+import { District, CaregiverStatus, DocumentType } from '../types/caregiver';
 
-export const dateOfBirthSchema = z
-  .date({
-    error: 'Invalid date of birth',
-  })
-  .refine((date) => date < new Date(), {
-    message: 'Date of birth must be in the past',
-  })
-  .refine(
-    (date) => {
-      const today = new Date();
-
-      let age = today.getFullYear() - date.getFullYear();
-      const monthDiff = today.getMonth() - date.getMonth();
-
-      if (
-        monthDiff < 0 ||
-        (monthDiff === 0 && today.getDate() < date.getDate())
-      ) {
-        age--;
-      }
-
-      return age >= 18;
-    },
-    {
-      message: 'User must be at least 18 years old',
-    },
-  );
+export const dateOfBirthSchema = z.preprocess(
+  (val) => {
+    if (typeof val === 'string' || val instanceof String) {
+      return new Date(val as string);
+    }
+    return val;
+  },
+  z
+    .date({
+      error: 'Invalid date of birth', // use `error` instead of `errorMap`
+    })
+    .refine((date) => date < new Date(), {
+      message: 'Date of birth must be in the past',
+    })
+    .refine(
+      (date) => {
+        const today = new Date();
+        let age = today.getFullYear() - date.getFullYear();
+        const monthDiff = today.getMonth() - date.getMonth();
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < date.getDate())
+        ) {
+          age--;
+        }
+        return age >= 18;
+      },
+      {
+        message: 'User must be at least 18 years old',
+      },
+    ),
+);
 
 // export const caregiverProfileSchema = z.object({
 //   firstName: z.string(),
@@ -168,3 +173,9 @@ const caregiverProfileSchema = z.object({
 export const createCaregiverProfileSchema = caregiverProfileSchema;
 
 export const editCaregiverProfileSchema = caregiverProfileSchema.partial();
+
+export const careGiverDocumentSchema = z.object({
+  type: z.enum(DocumentType, { error: 'DocumentType is a Enum' }), // enum type
+  fileUrl: z.string({ error: 'Enter valid URL' }).url(), // must be a valid URL
+  verified: z.boolean(),
+});

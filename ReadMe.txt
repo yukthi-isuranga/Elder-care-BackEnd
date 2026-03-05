@@ -96,3 +96,8 @@ npx prisma migrate dev --name Elder_model_BloodGroup_Attribute_change
 npx prisma migrate dev --name Elder_model_caretakerId_make_as_unique
 
 npx prisma migrate dev --name CareGiver_status_changes
+
+
+npx prisma migrate dev --name CareGiver_Versions_table_v2
+
+npx prisma migrate dev --name CareGiver_Versions_table_v3
