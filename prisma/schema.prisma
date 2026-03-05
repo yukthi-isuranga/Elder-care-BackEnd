@@ -53,8 +53,8 @@ model Caregiver {
   bio              String?
   hourlyRate       Float?
   status           CaregiverStatus     @default(DRAFT)
-  adminNote        String?
-  approvedById     String?
+  adminNote        String? // Admin note
+  approvedById     String? //Admin ID
   documents        CaregiverDocument[]
   createdAt        DateTime            @default(now())
   updatedAt        DateTime            @updatedAt
@@ -123,7 +123,8 @@ model CaregiverDocument {
 
 enum CaregiverStatus {
   DRAFT // profile not submitted yet
-  PENDING // waiting admin review
+  SUBMITTED // waiting admin review
+  UNDER_REVIEW // admin is looking in to it
   APPROVED // admin approved
   REJECTED // rejected permanently
   CHANGES_REQUIRED // admin requested changes
