@@ -61,120 +61,113 @@ export const dateOfBirthSchema = z
 //   approvedById: z.string().optional(),
 // });
 
-export const caregiverProfileSchema = z
-  .object({
-    firstName: z.string().min(1, 'First name is required'),
-    middleName: z.string().optional(),
-    lastName: z.string().min(1, 'Last name is required'),
-    nameWithInitials: z.string().optional(),
+const caregiverProfileSchema = z.object({
+  firstName: z.string().min(1, 'First name is required'),
+  middleName: z.string().optional(),
+  lastName: z.string().min(1, 'Last name is required'),
+  nameWithInitials: z.string().optional(),
 
-    phone: z
-      .string()
-      .regex(/^(?:\+94|0)7[0-9]{8}$/, 'Invalid Sri Lankan phone number'),
+  phone: z
+    .string()
+    .regex(/^(?:\+94|0)7[0-9]{8}$/, 'Invalid Sri Lankan phone number'),
 
-    nic: z
-      .string()
-      .transform((val) => val.trim().toUpperCase())
-      .refine((val) => /^(\d{9}[VX]|\d{12})$/.test(val), {
-        message: 'Invalid Sri Lankan NIC number',
-      }),
-
-    gender: z.enum(['MALE', 'FEMALE'], {
-      error: 'Please select a valid gender',
+  nic: z
+    .string()
+    .transform((val) => val.trim().toUpperCase())
+    .refine((val) => /^(\d{9}[VX]|\d{12})$/.test(val), {
+      message: 'Invalid Sri Lankan NIC number',
     }),
 
-    dateOfBirth: dateOfBirthSchema,
+  gender: z.enum(['MALE', 'FEMALE'], {
+    error: 'Please select a valid gender',
+  }),
 
-    address: z.string().min(1, 'Address is required'),
+  dateOfBirth: dateOfBirthSchema,
 
-    district: z.enum(District, {
-      error: 'Please select a valid district',
-    }),
+  address: z.string().min(1, 'Address is required'),
 
-    experienceYears: z
-      .number()
-      .min(0, { message: 'Experience cannot be negative' })
-      .max(60, { message: 'Experience cannot exceed 60 years' }),
+  district: z.enum(District, {
+    error: 'Please select a valid district',
+  }),
 
-    bio: z.string().max(1000).optional(),
+  experienceYears: z
+    .number()
+    .min(0, { message: 'Experience cannot be negative' })
+    .max(60, { message: 'Experience cannot exceed 60 years' }),
 
-    hourlyRate: z
-      .number()
-      .min(0, { message: 'Hourly rate must be positive' })
-      .optional(),
+  bio: z.string().max(1000).optional(),
 
-    status: z.enum(CaregiverStatus, {
-      error: 'Please select a valid status',
-    }),
+  hourlyRate: z
+    .number()
+    .min(0, { message: 'Hourly rate must be positive' })
+    .optional(),
 
-    adminNote: z.string().optional(),
+  status: z.enum(CaregiverStatus, {
+    error: 'Please select a valid status',
+  }),
 
-    approvedById: z.string().uuid().optional(),
+  adminNote: z.string().optional(),
 
-    // =============================
-    // PROFESSIONAL DETAILS
-    // =============================
+  approvedById: z.string().uuid().optional(),
 
-    qualifications: z.string().max(500).optional(), // NEW
-    certifications: z.string().max(500).optional(), // NEW
-    specialization: z.string().max(500).optional(), // NEW
-    languagesSpoken: z.string().max(200).optional(), // NEW
+  // =============================
+  // PROFESSIONAL DETAILS
+  // =============================
 
-    // =============================
-    // SKILL FLAGS
-    // =============================
+  qualifications: z.string().max(500).optional(), // NEW
+  certifications: z.string().max(500).optional(), // NEW
+  specialization: z.string().max(500).optional(), // NEW
+  languagesSpoken: z.string().max(200).optional(), // NEW
 
-    canHandleDementia: z.boolean().default(false), // NEW
-    canHandleBedridden: z.boolean().default(false), // NEW
-    canHandleWheelchair: z.boolean().default(false), // NEW
-    canProvidePhysiotherapy: z.boolean().default(false), // NEW
-    canAdministerMedication: z.boolean().default(false), // NEW
-    canHandleEmergency: z.boolean().default(false), // NEW
+  // =============================
+  // SKILL FLAGS
+  // =============================
 
-    // =============================
-    // AVAILABILITY
-    // =============================
+  canHandleDementia: z.boolean().default(false), // NEW
+  canHandleBedridden: z.boolean().default(false), // NEW
+  canHandleWheelchair: z.boolean().default(false), // NEW
+  canProvidePhysiotherapy: z.boolean().default(false), // NEW
+  canAdministerMedication: z.boolean().default(false), // NEW
+  canHandleEmergency: z.boolean().default(false), // NEW
 
-    isAvailable: z.boolean().default(true), // NEW
-    availableFrom: z.coerce.date().optional(), // NEW
-    availableTo: z.coerce.date().optional(), // NEW
-    availableForNight: z.boolean().default(false), // NEW
-    availableForFullTime: z.boolean().default(false), // NEW
+  // =============================
+  // AVAILABILITY
+  // =============================
 
-    // =============================
-    // VERIFICATION & SAFETY
-    // =============================
+  isAvailable: z.boolean().default(true), // NEW
+  availableFrom: z.coerce.date().optional(), // NEW
+  availableTo: z.coerce.date().optional(), // NEW
+  availableForNight: z.boolean().default(false), // NEW
+  availableForFullTime: z.boolean().default(false), // NEW
 
-    isIdentityVerified: z.boolean().default(false), // NEW
-    isBackgroundChecked: z.boolean().default(false), // NEW
-    backgroundCheckDate: z.coerce.date().optional(), // NEW
-    emergencyContactName: z.string().max(100).optional(), // NEW
-    emergencyContactPhone: z
-      .string()
-      .regex(/^(?:\+94|0)7[0-9]{8}$/, 'Invalid Sri Lankan phone number')
-      .optional(), // NEW
+  // =============================
+  // VERIFICATION & SAFETY
+  // =============================
 
-    // =============================
-    // RATING & PERFORMANCE
-    // =============================
+  isIdentityVerified: z.boolean().default(false), // NEW
+  isBackgroundChecked: z.boolean().default(false), // NEW
+  backgroundCheckDate: z.coerce.date().optional(), // NEW
+  emergencyContactName: z.string().max(100).optional(), // NEW
+  emergencyContactPhone: z
+    .string()
+    .regex(/^(?:\+94|0)7[0-9]{8}$/, 'Invalid Sri Lankan phone number')
+    .optional(), // NEW
 
-    averageRating: z.number().min(0).max(5).optional(), // NEW
-    totalReviews: z.number().min(0).optional(), // NEW
-    totalCompletedJobs: z.number().min(0).optional(), // NEW
+  // =============================
+  // RATING & PERFORMANCE
+  // =============================
 
-    // =============================
-    // SYSTEM
-    // =============================
+  averageRating: z.number().min(0).max(5).optional(), // NEW
+  totalReviews: z.number().min(0).optional(), // NEW
+  totalCompletedJobs: z.number().min(0).optional(), // NEW
 
-    isActive: z.boolean().default(true), // NEW
-  })
-  .refine(
-    (data) =>
-      !data.availableFrom ||
-      !data.availableTo ||
-      data.availableFrom <= data.availableTo,
-    {
-      message: 'availableFrom must be before availableTo',
-      path: ['availableTo'],
-    },
-  );
+  // =============================
+  // SYSTEM
+  // =============================
+
+  isActive: z.boolean().default(true), // NEW
+});
+
+export const createCaregiverProfileSchema = caregiverProfileSchema;
+
+export const editCaregiverProfileSchema = caregiverProfileSchema.partial();

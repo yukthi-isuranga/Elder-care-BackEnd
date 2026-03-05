@@ -132,3 +132,36 @@ export const careGiverProfileController = async (
     next(error); // let global error handler handle the rest
   }
 };
+
+export const EditcareGiverProfileController = async (
+  req: CareGiverRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userData = req.user;
+    const data = req.body;
+
+    if (!userData) return res.status(401).json({ message: 'Unauthorized' });
+
+    //Update Caregiver data
+    const caregiverData = await prisma.caregiver.update({
+      where: { userId: userData.id },
+      data,
+    });
+    if (caregiverData) {
+      return res.status(200).json({
+        message: 'CareGiver Profile Successfully Updated...!!!',
+        caregiverData,
+      });
+    } else
+      return res.status(400).json({
+        message: 'CareGiver Profile Update Failed...!!!',
+      });
+  } catch (error) {
+    return res.status(400).json({
+      message: 'CareGiver Profile Update Failed...!!!',
+      error,
+    });
+  }
+};
