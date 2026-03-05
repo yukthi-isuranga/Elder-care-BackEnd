@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import {
   careGiverProfileController,
-  EditcareGiverProfileController,
+  editcareGiverProfileController,
+  submitCareGiverProfileController,
 } from '../controllers/caregiverController';
 import { caregiverAuthMiddleware } from '../middlewares/caregiverAuthMiddleware';
 import { validateRequest } from '../middlewares/validateRequests';
@@ -25,7 +26,10 @@ router.post(
 router.patch(
   '/profile',
   validateRequest(editCaregiverProfileSchema),
-  EditcareGiverProfileController,
+  editcareGiverProfileController,
 );
+
+// Submit For Approval
+router.patch('/profile/submit', submitCareGiverProfileController);
 
 export default router;

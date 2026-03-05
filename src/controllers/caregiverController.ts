@@ -2,6 +2,7 @@ import { Errback, NextFunction, Request, Response } from 'express';
 import { CaregiverCreateRequest } from '../types/caregiver';
 import { User } from '../generated/prisma/client';
 import { prisma } from '../config/prisma';
+import { createCaregiverProfileSchema } from '../validators/caregiverProfileValidator';
 
 interface CareGiverRequest extends Request {
   user?: User;
@@ -48,7 +49,7 @@ export const careGiverProfileController = async (
         experienceYears: data.experienceYears,
         bio: data.bio,
         hourlyRate: data.hourlyRate,
-        status: data.status,
+        // status: data.status,
         adminNote: data.adminNote,
         approvedById: data.approvedById,
 
@@ -133,7 +134,7 @@ export const careGiverProfileController = async (
   }
 };
 
-export const EditcareGiverProfileController = async (
+export const editcareGiverProfileController = async (
   req: CareGiverRequest,
   res: Response,
   next: NextFunction,
@@ -163,5 +164,56 @@ export const EditcareGiverProfileController = async (
       message: 'CareGiver Profile Update Failed...!!!',
       error,
     });
+  }
+};
+
+export const submitCareGiverProfileController = async (
+  req: CareGiverRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userData = req.user;
+    if (!userData) {
+      return res.status(400).json({ message: 'User Data Not found....' });
+    }
+    // first checks for the profile
+    const careGiverProfile = await prisma.caregiver.findUnique({
+      where: { userId: userData.id },
+    });
+
+    if (!careGiverProfile) {
+      return res
+        .status(400)
+        .json({ message: 'CareGiver Profile Not found....' });
+    }
+
+    // checks DB data with the Zod shema
+    const validate = createCaregiverProfileSchema.safeParse(careGiverProfile);
+
+    if (!validate.success) {
+      return res.status(400).json({
+        errors: validate.error.format(),
+      });
+    }
+
+    // Update the Status of the Caregiver Profile
+    const updateCgStatus = await prisma.caregiver.update({
+      where: { userId: userData.id },
+      data: { status: 'SUBMITTED' },
+    });
+
+    if (!updateCgStatus) {
+      return res
+        .status(400)
+        .json({ message: 'Approval didnt Submitted...!!!' });
+    }
+
+    return res.status(200).json({
+      message: 'Your Request was submitted to ADMIN...',
+      updateCgStatus,
+    });
+  } catch (error) {
+    return res.status(400).json({ error });
   }
 };

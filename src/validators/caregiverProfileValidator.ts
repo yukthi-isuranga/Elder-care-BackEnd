@@ -2,11 +2,8 @@ import { z } from 'zod';
 import { District, CaregiverStatus } from '../types/caregiver';
 
 export const dateOfBirthSchema = z
-  .string()
-  .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
-  .transform((val) => new Date(val))
-  .refine((date) => !isNaN(date.getTime()), {
-    message: 'Invalid date',
+  .date({
+    error: 'Invalid date of birth',
   })
   .refine((date) => date < new Date(), {
     message: 'Date of birth must be in the past',
@@ -106,9 +103,9 @@ const caregiverProfileSchema = z.object({
     error: 'Please select a valid status',
   }),
 
-  adminNote: z.string().optional(),
+  adminNote: z.string().optional().nullable(),
 
-  approvedById: z.string().uuid().optional(),
+  approvedById: z.string().uuid().optional().nullable(),
 
   // =============================
   // PROFESSIONAL DETAILS
