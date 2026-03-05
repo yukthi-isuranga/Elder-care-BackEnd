@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   adminController,
+  adminGetAllCgController,
   adminGetAllCtController,
 } from '../controllers/adminController';
 import { authMiddleware } from '../middlewares/authMiddleware';
@@ -15,6 +16,7 @@ router.get('/', adminController);
 router.get('/caretakers', adminGetAllCtController);
 
 // Todo [SCRUM-34] Get all Caregiver Profiles by Admin
+router.get('/caregivers', adminGetAllCgController);
 
 // Todo [SCRUM-35] Get All Approvals from Caregivers to Admin
 
