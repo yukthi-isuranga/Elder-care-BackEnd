@@ -209,11 +209,80 @@ export const submitCareGiverProfileController = async (
         .json({ message: 'Approval didnt Submitted...!!!' });
     }
 
+    // First, get the last version number (if any)
+    const lastVersion = await prisma.caregiverProfileVersion.findFirst({
+      where: { caregiverId: careGiverProfile.id },
+      orderBy: { versionNumber: 'desc' },
+    });
+
+    const documents = await prisma.caregiverDocument.findMany({
+      where: { caregiverId: careGiverProfile.id },
+    });
+
+    const versionNumber = lastVersion ? lastVersion.versionNumber + 1 : 1;
+    const documentversionNumber = lastVersion
+      ? lastVersion.documentversionNumber + 1
+      : 1;
+
+    // Create a new version
+    const versionsData = await prisma.caregiverProfileVersion.create({
+      data: {
+        documentversionNumber,
+        documents,
+        caregiverId: careGiverProfile.id,
+        versionNumber: versionNumber,
+        data: updateCgStatus, // snapshot of caregiver profile
+        status: 'SUBMITTED', // optional, can use the same as caregiver
+      },
+    });
+
+    if (!versionsData) {
+      return res.status(400).json({ message: 'Version Didnt careted...' });
+    }
+
     return res.status(200).json({
       message: 'Your Request was submitted to ADMIN...',
       updateCgStatus,
     });
   } catch (error) {
     return res.status(400).json({ error });
+  }
+};
+
+export const createCaregiverDocumentController = async (
+  req: CareGiverRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userData = req.user;
+    const data = req.body;
+
+    const caregiverData = await prisma.caregiver.findUnique({
+      where: { userId: userData?.id },
+    });
+    if (!caregiverData) {
+      return res.status(400).json({
+        message: 'Caregiver data Not found...!!!',
+      });
+    }
+
+    const caregiverDocument = await prisma.caregiverDocument.create({
+      data: { caregiverId: caregiverData.id, ...data },
+    });
+
+    if (!caregiverDocument) {
+      return res.status(400).json({
+        message: 'Caregiver Document Not Created...!!!',
+      });
+    }
+    return res.status(200).json({
+      message: 'Caregiver Document Created...!!!',
+      caregiverDocument,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      error,
+    });
   }
 };

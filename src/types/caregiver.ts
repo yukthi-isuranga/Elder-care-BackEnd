@@ -155,3 +155,9 @@ export enum CaregiverStatus {
   REJECTED = 'REJECTED', // rejected permanently
   CHANGES_REQUIRED = 'CHANGES_REQUIRED', // admin requested changes
 }
+
+export enum DocumentType {
+  NIC = 'NIC',
+  CERTIFICATE = 'CERTIFICATE',
+  POLICE_REPORT = 'POLICE_REPORT',
+}

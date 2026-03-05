@@ -20,9 +20,14 @@ router.get('/caretakers', adminGetAllCtController);
 // Todo [SCRUM-34] Get all Caregiver Profiles by Admin
 router.get('/caregivers', adminGetAllCgController);
 
-// Todo [SCRUM-35] Get All Approvals from Caregivers to Admin
+// Todo [SCRUM-35] Get All Approvals from Caregivers to Admin. Pending approvals
 router.get('/caregivers/approvals', adminGetAllCgApprovalsController);
 
+// get Single approval
 router.get('/caregivers/approvals/:approvalId', adminGetCgApprovalController);
+
+// Todo [SCRUM-36] PATCH /admin/caregivers/:id/approve
+
+// Todo [SCRUM-37] PATCH /admin/caregivers/:id/reject
 
 export default router;

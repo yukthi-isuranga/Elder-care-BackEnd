@@ -107,13 +107,14 @@ model Caregiver {
   // =============================
   isActive Boolean @default(true) // NEW - soft delete control
 
-  user       User  @relation("CaregiverProfile", fields: [userId], references: [id])
-  approvedBy User? @relation("ApprovedBy", fields: [approvedById], references: [id])
+  user                     User                      @relation("CaregiverProfile", fields: [userId], references: [id])
+  approvedBy               User?                     @relation("ApprovedBy", fields: [approvedById], references: [id])
+  caregiverProfileVersions CaregiverProfileVersion[]
 }
 
 model CaregiverDocument {
   id          String       @id @default(uuid())
-  caregiverId String
+  caregiverId String       @unique
   type        DocumentType
   fileUrl     String
   verified    Boolean      @default(false)
@@ -332,4 +333,20 @@ enum BloodGroup {
   AB_NEGATIVE
   O_POSITIVE
   O_NEGATIVE
+}
+
+model CaregiverProfileVersion {
+  id                    String          @id @default(uuid())
+  caregiverId           String
+  versionNumber         Int
+  documentversionNumber Int
+  data                  Json // Stores the submitted profile snapshot
+  documents             Json? //Stores the submitted documents snapshot
+  status                CaregiverStatus @default(DRAFT) // PENDING, APPROVED, REJECTED
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  caregiver Caregiver @relation(fields: [caregiverId], references: [id])
+
+  @@index([caregiverId, versionNumber])
 }
