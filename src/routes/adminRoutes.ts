@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  adminCgApprovalController,
   adminController,
   adminGetAllCgApprovalsController,
   adminGetAllCgController,
@@ -27,6 +28,10 @@ router.get('/caregivers/approvals', adminGetAllCgApprovalsController);
 router.get('/caregivers/approvals/:approvalId', adminGetCgApprovalController);
 
 // Todo [SCRUM-36] PATCH /admin/caregivers/:id/approve
+router.patch(
+  '/caregivers/approvals/:approvalId/approve',
+  adminCgApprovalController,
+);
 
 // Todo [SCRUM-37] PATCH /admin/caregivers/:id/reject
 
