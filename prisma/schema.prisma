@@ -107,9 +107,10 @@ model Caregiver {
   // =============================
   isActive Boolean @default(true) // NEW - soft delete control
 
-  user                     User                      @relation("CaregiverProfile", fields: [userId], references: [id])
-  approvedBy               User?                     @relation("ApprovedBy", fields: [approvedById], references: [id])
-  caregiverProfileVersions CaregiverProfileVersion[]
+  user                      User                       @relation("CaregiverProfile", fields: [userId], references: [id])
+  approvedBy                User?                      @relation("ApprovedBy", fields: [approvedById], references: [id])
+  caregiverProfileVersions  CaregiverProfileVersion[]
+  caregiverDocumentVersions CaregiverDocumentVersion[]
 }
 
 model CaregiverDocument {
@@ -336,17 +337,26 @@ enum BloodGroup {
 }
 
 model CaregiverProfileVersion {
-  id                    String          @id @default(uuid())
-  caregiverId           String
-  versionNumber         Int
-  documentversionNumber Int
-  data                  Json // Stores the submitted profile snapshot
-  documents             Json? //Stores the submitted documents snapshot
-  status                CaregiverStatus @default(DRAFT) // PENDING, APPROVED, REJECTED
-  createdAt             DateTime        @default(now())
-  updatedAt             DateTime        @updatedAt
+  id            String          @id @default(uuid())
+  caregiverId   String
+  versionNumber Int
+  data          Json // Stores the submitted profile snapshot
+  status        CaregiverStatus @default(DRAFT) // PENDING, APPROVED, REJECTED
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
 
   caregiver Caregiver @relation(fields: [caregiverId], references: [id])
 
   @@index([caregiverId, versionNumber])
+}
+
+model CaregiverDocumentVersion {
+  id            String   @id @default(uuid())
+  caregiverId   String
+  versionNumber Int
+  documents     Json
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  caregiver Caregiver @relation(fields: [caregiverId], references: [id])
 }

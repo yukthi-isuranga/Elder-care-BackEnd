@@ -101,3 +101,6 @@ npx prisma migrate dev --name CareGiver_status_changes
 npx prisma migrate dev --name CareGiver_Versions_table_v2
 
 npx prisma migrate dev --name CareGiver_Versions_table_v3
+
+
+npx prisma migrate dev --name Caregiver_Document_Version
