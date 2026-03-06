@@ -215,20 +215,64 @@ export const submitCareGiverProfileController = async (
       orderBy: { versionNumber: 'desc' },
     });
 
+    const versionNumber = lastVersion ? lastVersion.versionNumber + 1 : 1;
+
+    // Check Documents Changes
     const documents = await prisma.caregiverDocument.findMany({
       where: { caregiverId: careGiverProfile.id },
     });
 
-    const versionNumber = lastVersion ? lastVersion.versionNumber + 1 : 1;
-    const documentversionNumber = lastVersion
-      ? lastVersion.documentversionNumber + 1
-      : 1;
+    // Check if documents exist
+    if (documents.length > 0) {
+      const lastDocumentVersion =
+        await prisma.caregiverDocumentVersion.findFirst({
+          where: { caregiverId: careGiverProfile.id },
+          orderBy: { versionNumber: 'desc' },
+        });
 
-    // Create a new version
+      let shouldCreateVersion = false;
+      let documentVersionNumber = 1;
+
+      const currentDocs = normalizeDocs(documents);
+
+      if (!lastDocumentVersion) {
+        shouldCreateVersion = true;
+      } else {
+        const previousDocs = normalizeDocs(
+          lastDocumentVersion.documents as any[],
+        );
+
+        if (JSON.stringify(previousDocs) !== JSON.stringify(currentDocs)) {
+          shouldCreateVersion = true;
+          documentVersionNumber = lastDocumentVersion.versionNumber + 1;
+        }
+      }
+
+      if (shouldCreateVersion) {
+        await prisma.caregiverDocumentVersion.create({
+          data: {
+            caregiverId: careGiverProfile.id,
+            versionNumber: documentVersionNumber,
+            documents: documents,
+          },
+        });
+      }
+    }
+
+    // // Check there any previous Document vershons
+    // const documentVersion = await prisma.caregiverDocumentVersion.findFirst({
+    //   where: { caregiverId: careGiverProfile.id },
+    //   orderBy: { versionNumber: 'desc' },
+    // });
+
+    // // if there is no null documents, make first vershon as 1 after 1++
+    // if (documents && documentVersion) {
+    //   // const documentversionNumber = lastVersion?.documentversionNumber ?? 1;
+    // }
+
+    // Create a new version Caregiver Profile Version
     const versionsData = await prisma.caregiverProfileVersion.create({
       data: {
-        documentversionNumber,
-        documents,
         caregiverId: careGiverProfile.id,
         versionNumber: versionNumber,
         data: updateCgStatus, // snapshot of caregiver profile
@@ -247,6 +291,16 @@ export const submitCareGiverProfileController = async (
   } catch (error) {
     return res.status(400).json({ error });
   }
+};
+
+const normalizeDocs = (docs: any[]) => {
+  return docs
+    .map((d) => ({
+      type: d.type,
+      fileUrl: d.fileUrl,
+      verified: d.verified,
+    }))
+    .sort((a, b) => a.fileUrl.localeCompare(b.fileUrl));
 };
 
 export const createCaregiverDocumentController = async (
