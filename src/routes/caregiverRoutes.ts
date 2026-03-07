@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  caregiverController,
   careGiverProfileController,
   createCaregiverDocumentController,
   editcareGiverProfileController,
@@ -14,6 +15,9 @@ import {
 } from '../validators/caregiverProfileValidator';
 
 const router = Router();
+
+// Get Caregivers - No need of Token checking
+router.get('/', caregiverController);
 
 router.use(caregiverAuthMiddleware);
 

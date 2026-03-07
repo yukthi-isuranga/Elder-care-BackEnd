@@ -1,6 +1,6 @@
 import { Errback, NextFunction, Request, Response } from 'express';
 import { CaregiverCreateRequest } from '../types/caregiver';
-import { User } from '../generated/prisma/client';
+import { District, Gender, User } from '../generated/prisma/client';
 import { prisma } from '../config/prisma';
 import { createCaregiverProfileSchema } from '../validators/caregiverProfileValidator';
 import { createCaregiverVersions } from '../services/versioningService';
@@ -9,15 +9,99 @@ interface CareGiverRequest extends Request {
   user?: User;
 }
 
-export const caregiverController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
+export const caregiverController = async (req: Request, res: Response) => {
   try {
-    res.status(201).json({ message: 'CAREGIVER Route Working.....!!!' });
+    const {
+      district,
+      gender,
+      experienceYears,
+      canHandleDementia,
+      canHandleBedridden,
+      canHandleWheelchair,
+      availableForNight,
+      availableForFullTime,
+      hourlyRateMin,
+      hourlyRateMax,
+      page = '1',
+      limit = '10',
+    } = req.query;
+
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+
+    const caregivers = await prisma.caregiver.findMany({
+      where: {
+        status: 'APPROVED',
+        isActive: true,
+
+        ...(district && { district: district as District }),
+        ...(gender && { gender: gender as Gender }),
+
+        ...(experienceYears && {
+          experienceYears: {
+            gte: Number(experienceYears),
+          },
+        }),
+
+        ...(hourlyRateMin && {
+          hourlyRate: {
+            gte: Number(hourlyRateMin),
+          },
+        }),
+
+        ...(hourlyRateMax && {
+          hourlyRate: {
+            lte: Number(hourlyRateMax),
+          },
+        }),
+
+        ...(canHandleDementia && {
+          canHandleDementia: canHandleDementia === 'true',
+        }),
+
+        ...(canHandleBedridden && {
+          canHandleBedridden: canHandleBedridden === 'true',
+        }),
+
+        ...(canHandleWheelchair && {
+          canHandleWheelchair: canHandleWheelchair === 'true',
+        }),
+
+        ...(availableForNight && {
+          availableForNight: availableForNight === 'true',
+        }),
+
+        ...(availableForFullTime && {
+          availableForFullTime: availableForFullTime === 'true',
+        }),
+      },
+
+      orderBy: {
+        averageRating: 'desc',
+      },
+
+      skip: (pageNumber - 1) * limitNumber,
+      take: limitNumber,
+    });
+
+    const total = await prisma.caregiver.count({
+      where: {
+        status: 'APPROVED',
+        isActive: true,
+      },
+    });
+
+    return res.json({
+      page: pageNumber,
+      limit: limitNumber,
+      total,
+      data: caregivers,
+    });
   } catch (error) {
-    next(error);
+    console.error(error);
+    return res.status(500).json({
+      message: 'Failed to fetch caregivers',
+    });
   }
 };
 
