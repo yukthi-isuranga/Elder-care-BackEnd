@@ -27,7 +27,7 @@ export const caregiverAuthMiddleware = async (
 
   if (!token) {
     return res
-      .status(404)
+      .status(401)
       .json({ message: 'Unauthorized, Caretaker Token was not found...!!!' });
   }
 
@@ -46,7 +46,7 @@ export const caregiverAuthMiddleware = async (
     if (!user) {
       return res.status(404).json({ message: 'User Not Found...!!!' });
     } else if (user.role != 'CAREGIVER') {
-      return res.status(404).json({
+      return res.status(403).json({
         message: `${user.name} - ${user.email}, : Didnt have CAREGIVER access...!!!`,
       });
     } else {
