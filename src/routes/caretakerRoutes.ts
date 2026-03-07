@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import {
+  bookingCaregiverController,
   caretakerController,
   caretakerProfileController,
   editCareTakerProfileController,
@@ -7,6 +8,7 @@ import {
 import { caretakerAuthMiddleware } from '../middlewares/caretakerAuthMiddleware';
 import { validateRequest } from '../middlewares/validateRequests';
 import {
+  bookingsSchema,
   createCareTakerProfileSchema,
   editCareTakerProfileSchema,
 } from '../validators/careTakerProfileValidators';
@@ -47,6 +49,13 @@ router.patch(
   '/elder',
   validateRequest(elderUpdateSchema),
   elderUpdateController,
+);
+
+// Caregiver Booking
+router.post(
+  '/booking/',
+  validateRequest(bookingsSchema),
+  bookingCaregiverController,
 );
 
 export default router;

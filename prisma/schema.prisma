@@ -111,6 +111,7 @@ model Caregiver {
   approvedBy                User?                      @relation("ApprovedBy", fields: [approvedById], references: [id])
   caregiverProfileVersions  CaregiverProfileVersion[]
   caregiverDocumentVersions CaregiverDocumentVersion[]
+  bookings                  Booking[]
 }
 
 model CaregiverDocument {
@@ -222,10 +223,11 @@ model Caretaker {
   // Relations
   elders Elder[]
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   //  user       User  @relation("CaregiverProfile", fields: [userId], references: [id])
-  user      User     @relation("caretakerProfile", fields: [userId], references: [id])
+  user      User      @relation("caretakerProfile", fields: [userId], references: [id])
+  bookings  Booking[]
 }
 
 enum RelationshipType {
@@ -310,6 +312,7 @@ model Elder {
   updatedAt DateTime @updatedAt
 
   caretaker Caretaker @relation(fields: [caretakerId], references: [id])
+  bookings  Booking[]
 }
 
 enum MobilityLevel {
@@ -359,4 +362,35 @@ model CaregiverDocumentVersion {
   updatedAt     DateTime @updatedAt
 
   caregiver Caregiver @relation(fields: [caregiverId], references: [id])
+}
+
+model Booking {
+  id String @id @default(uuid())
+
+  caretakerId String
+  caregiverId String
+  elderId     String
+
+  startTime DateTime
+  endTime   DateTime
+
+  status BookingStatus @default(PENDING)
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  caretaker Caretaker @relation(fields: [caretakerId], references: [id])
+  caregiver Caregiver @relation(fields: [caregiverId], references: [id])
+  elder     Elder     @relation(fields: [elderId], references: [id])
+}
+
+enum BookingStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
 }
