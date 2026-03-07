@@ -64,6 +64,30 @@ const careTakerProfileSchema = z.object({
   notes: z.string().min(1, 'Error in Notes').optional(),
 });
 
+// bookings
+export const bookingsSchema = z
+  .object({
+    // caretakerId: z.string().uuid(),
+    caregiverId: z.string().uuid(),
+    elderId: z.string().uuid(),
+
+    startTime: z
+      .string({ message: 'Invalid start time' })
+      .datetime()
+      .transform((val) => new Date(val)),
+
+    endTime: z
+      .string({ message: 'Invalid end time' })
+      .datetime()
+      .transform((val) => new Date(val)),
+
+    notes: z.string().max(500).optional(),
+  })
+  .refine((data) => data.endTime > data.startTime, {
+    message: 'End time must be after start time',
+    path: ['endTime'],
+  });
+
 export const createCareTakerProfileSchema = careTakerProfileSchema;
 
 export const editCareTakerProfileSchema = careTakerProfileSchema.partial();

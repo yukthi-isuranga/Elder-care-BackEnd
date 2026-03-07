@@ -139,3 +139,85 @@ export const editCareTakerProfileController = async (
     return res.status(400).json({ message: `${error} ` });
   }
 };
+
+// Bookings
+export const bookingCaregiverController = async (
+  req: CareTakerUserData,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userData = req.user;
+    // const { caregiverId } = req.params;
+    const body = req.body;
+
+    const caretaker = await prisma.caretaker.findUnique({
+      where: { userId: userData?.id },
+    });
+
+    if (!caretaker) {
+      return res.status(403).json({
+        message: 'Caretaker profile not found',
+      });
+    }
+    // Prevent Booking in the Past
+    if (new Date(body.startTime) < new Date()) {
+      return res.status(400).json({
+        message: 'Booking cannot start in the past',
+      });
+    }
+    // Prevent Elder Double Care Sessions
+    const elderOverlap = await prisma.booking.findFirst({
+      where: {
+        elderId: body.elderId,
+        AND: [
+          { endTime: { gt: new Date(body.startTime) } },
+          { startTime: { lt: new Date(body.endTime) } },
+        ],
+      },
+    });
+
+    if (elderOverlap) {
+      return res.status(400).json({
+        message: 'Elder already has a booking during this time',
+      });
+    }
+    // Checks time will overlaps
+    const overlaps = await prisma.booking.findFirst({
+      where: {
+        caretakerId: caretaker.id,
+        AND: [
+          { endTime: { gt: new Date(body.startTime) } },
+          { startTime: { lt: new Date(body.endTime) } },
+        ],
+      },
+    });
+
+    if (overlaps) {
+      return res.status(400).json({
+        message: 'Booking time overlaps with an existing booking',
+      });
+    }
+
+    // Create Booking
+    const bookingData = await prisma.booking.create({
+      data: {
+        caretakerId: caretaker.id,
+        caregiverId: body.caregiverId,
+        elderId: body.elderId,
+        startTime: new Date(body.startTime),
+        endTime: new Date(body.endTime),
+        notes: body.notes,
+      },
+    });
+
+    return res.status(201).json({
+      message: `Booking created successfully`,
+      bookingData,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Something went wrong',
+    });
+  }
+};
