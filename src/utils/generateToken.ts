@@ -10,9 +10,9 @@ const generateToken = (userId: string, res: Response) => {
 
   res.cookie('jwtToken', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.COOKIE_SECURE === 'true',
+    sameSite: process.env.APP_ENV === 'production' ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    sameSite: 'lax', //  or 'none' if you want cross-origin cookies with secure:true in production
   });
 
   return token;
