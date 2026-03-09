@@ -8,8 +8,16 @@ import authRoutes from './routes/authRoutes';
 import adminRoutes from './routes/adminRoutes';
 import caretakerRoutes from './routes/caretakerRoutes';
 import caregiverRoutes from './routes/caregiverRoutes';
+import cors from 'cors';
 
 const app = express();
+
+app.use(
+  cors({
+    origin: 'http://localhost:3000', // your Next.js frontend
+    credentials: true, // important for cookies
+  }),
+);
 
 app.use(express.json());
 

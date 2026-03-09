@@ -1,14 +1,14 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
-import { prisma } from '../config/prisma';
 import { User } from '../generated/prisma/client';
-
-interface CustomJwtPayload extends JwtPayload {
-  userId: string;
-}
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { prisma } from '../config/prisma';
 
 interface AuthRequest extends Request {
   user?: User;
+}
+
+interface CustomJwtPayload extends JwtPayload {
+  userId: string;
 }
 
 export const authMiddleware = async (
@@ -17,45 +17,36 @@ export const authMiddleware = async (
   next: NextFunction,
 ) => {
   let token;
+
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
-  } else if (req.cookies?.jwtToken) {
-    token = req.cookies.jwtToken;
   }
+
   if (!token) {
-    return res
-      .status(401)
-      .json({ message: 'Unauthorized, No Token Found...!' });
+    return res.status(401).json({ message: 'No token found' });
   }
+
   try {
-    // Verify the token and extract the user ID
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET!,
     ) as CustomJwtPayload;
-    const userId = decoded.userId;
 
-    // Fetch the user from the database using the extracted user ID
     const user = await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
+      where: { id: decoded.userId },
     });
 
     if (!user) {
-      return res.status(401).json({ message: 'Unauthorized, No User Found!' });
-    } else if (user.role != 'ADMIN') {
-      return res.status(401).json({
-        message: `${user.name} - ${user.email} : Didnt have ADMIN access...!!!`,
-      });
-    } else {
-      req.user = user;
-      next();
+      return res.status(401).json({ message: 'User not found' });
     }
-  } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
+
+    req.user = user;
+
+    next();
+  } catch {
+    res.status(401).json({ message: 'Invalid token' });
   }
 };
