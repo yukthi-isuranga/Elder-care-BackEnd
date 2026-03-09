@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/prisma';
 import bcrypt from 'bcrypt';
 import { generateToken } from '../../prisma/utils/genarateToken';
+import { User } from '../generated/prisma/client';
 
 export const registerController = async (
   req: Request,
@@ -42,4 +43,24 @@ export const registerController = async (
   res
     .status(201)
     .json({ status: 'User registered successfully', user: newUser, token });
+};
+
+interface UserDataReq extends Request {
+  user?: User;
+}
+
+export const getMeController = async (req: UserDataReq, res: Response) => {
+  const userId = req.user?.id;
+
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+    },
+  });
+
+  res.json(user);
 };

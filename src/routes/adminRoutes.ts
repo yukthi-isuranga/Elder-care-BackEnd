@@ -7,11 +7,11 @@ import {
   adminGetAllCtController,
   adminGetCgApprovalController,
 } from '../controllers/adminController';
-import { authMiddleware } from '../middlewares/authMiddleware';
+import { adminMiddleware } from '../middlewares/adminMiddleware';
 
 const router = Router();
 
-router.use(authMiddleware);
+router.use(adminMiddleware);
 
 router.get('/', adminController);
 

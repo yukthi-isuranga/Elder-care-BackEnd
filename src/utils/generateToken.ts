@@ -12,7 +12,7 @@ const generateToken = (userId: string, res: Response) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    sameSite: 'strict',
+    sameSite: 'lax', //  or 'none' if you want cross-origin cookies with secure:true in production
   });
 
   return token;

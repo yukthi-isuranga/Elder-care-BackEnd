@@ -1,11 +1,18 @@
 import { Router } from 'express';
-import { registerController } from '../controllers/authController';
+import {
+  getMeController,
+  registerController,
+} from '../controllers/authController';
 import {
   logInController,
   logoutController,
 } from '../controllers/loginControllers';
+import { authMiddleware } from '../middlewares/authMiddleware';
 
 const router = Router();
+
+// Get User Data
+router.get('/me', authMiddleware, getMeController);
 
 //for SignUp
 router.post('/register', registerController);
