@@ -46,6 +46,8 @@ export const logoutController = async (
 ) => {
   res.cookie('jwtToken', '', {
     httpOnly: true,
+    secure: true,
+    sameSite: 'none',
     expires: new Date(0),
   });
 
