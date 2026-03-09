@@ -13,6 +13,7 @@ const generateToken = (userId: string, res: Response) => {
     secure: process.env.COOKIE_SECURE === 'true',
     sameSite: process.env.APP_ENV === 'production' ? 'none' : 'lax',
     path: '/',
+    domain: '.vercel.app', // important
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
