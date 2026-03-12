@@ -4,6 +4,7 @@ import {
   caretakerController,
   caretakerProfileController,
   editCareTakerProfileController,
+  getCaretakerProfile,
 } from '../controllers/caretakerControllers';
 import { caretakerAuthMiddleware } from '../middlewares/caretakerAuthMiddleware';
 import { validateRequest } from '../middlewares/validateRequests';
@@ -33,6 +34,9 @@ router.post(
   validateRequest(createCareTakerProfileSchema),
   caretakerProfileController,
 );
+
+// Get CareTaker Profile Detils
+router.get('/profile/:userId', getCaretakerProfile);
 
 //Edit CareTaker
 router.patch(

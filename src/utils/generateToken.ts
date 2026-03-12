@@ -10,7 +10,7 @@ const generateToken = (userId: string, res: Response) => {
 
   res.cookie('jwtToken', token, {
     httpOnly: true,
-    // secure: true,
+    // secure: false,
     // sameSite: 'none',
     secure: process.env.COOKIE_SECURE === 'true',
     sameSite: process.env.APP_ENV === 'production' ? 'none' : 'lax',
