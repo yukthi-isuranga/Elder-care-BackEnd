@@ -40,8 +40,7 @@ const careTakerProfileSchema = z.object({
     error: 'Please select a valid RelationshipType',
   }),
   relationshipTypeOther: z
-    .string()
-    .min(1, 'Error in RelationshipTypeOther.')
+    .string({ error: 'Error in RelationshipTypeOther.' })
     .optional(),
   isPrimaryContact: z.boolean({
     error: 'isPrimaryContact must be true or false',

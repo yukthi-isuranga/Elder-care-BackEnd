@@ -9,6 +9,7 @@ import adminRoutes from './routes/adminRoutes';
 import caretakerRoutes from './routes/caretakerRoutes';
 import caregiverRoutes from './routes/caregiverRoutes';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
@@ -22,6 +23,9 @@ app.use(
 app.use(express.json());
 
 app.use(errorHandler);
+
+app.use(cookieParser());
+app.use(express.json());
 
 // Routes
 app.use('/api/items', itemRoutes);

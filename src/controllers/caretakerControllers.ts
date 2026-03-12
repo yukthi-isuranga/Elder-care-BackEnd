@@ -19,6 +19,40 @@ export const caretakerController = async (
   }
 };
 
+// Get Caretaker Profile
+export const getCaretakerProfile = async (
+  req: CareTakerUserData,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { userId } = req.params;
+    const userData = req.user;
+
+    // Security check
+    if (userId !== userData?.id) {
+      return res.status(403).json({ message: 'Unauthorized user detected' });
+    }
+
+    const profileData = await prisma.caretaker.findUnique({
+      where: {
+        userId: userId,
+      },
+    });
+
+    if (!profileData) {
+      return res.status(404).json({ message: 'No user data found' });
+    }
+
+    return res.status(200).json({
+      message: 'Caretaker profile fetched successfully',
+      profileData,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Create Caretaker Profile
 export const caretakerProfileController = async (
   req: CareTakerUserData,
