@@ -129,14 +129,7 @@ const elderSchema = z.object({
   // -----------------------
   // Emergency Info
   // -----------------------
-  emergencyDoctorName: z
-    .string()
-    .regex(
-      /^(?:\+94|0)7[0-9]{8}$/,
-      'Invalid Sri Lankan phone number, emergencyDoctorName',
-    )
-    .optional()
-    .nullable(),
+  emergencyDoctorName: z.string().optional().nullable(),
   // .string({ error: 'Error in emergencyDoctorName' })
   // .optional()
   // .nullable(),
@@ -148,14 +141,7 @@ const elderSchema = z.object({
     )
     .optional()
     .nullable(),
-  preferredHospital: z
-    .string()
-    .regex(
-      /^(?:\+94|0)7[0-9]{8}$/,
-      'Invalid Sri Lankan phone number, preferredHospital',
-    )
-    .optional()
-    .nullable(),
+  preferredHospital: z.string().optional().nullable(),
 
   // -----------------------
   // System
