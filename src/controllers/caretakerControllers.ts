@@ -205,8 +205,8 @@ export const bookingCaregiverController = async (
       where: {
         elderId: body.elderId,
         AND: [
-          { endTime: { gt: new Date(body.startTime) } },
-          { startTime: { lt: new Date(body.endTime) } },
+          { startDateTime: { gt: new Date(body.startTime) } },
+          { endDateTime: { lt: new Date(body.endTime) } },
         ],
       },
     });
@@ -221,8 +221,8 @@ export const bookingCaregiverController = async (
       where: {
         caretakerId: caretaker.id,
         AND: [
-          { endTime: { gt: new Date(body.startTime) } },
-          { startTime: { lt: new Date(body.endTime) } },
+          { startDateTime: { gt: new Date(body.startTime) } },
+          { endDateTime: { lt: new Date(body.endTime) } },
         ],
       },
     });
@@ -239,9 +239,15 @@ export const bookingCaregiverController = async (
         caretakerId: caretaker.id,
         caregiverId: body.caregiverId,
         elderId: body.elderId,
-        startTime: new Date(body.startTime),
-        endTime: new Date(body.endTime),
+        startDateTime: new Date(body.startDateTime),
+        endDateTime: new Date(body.endDateTime),
         notes: body.notes,
+
+        // ✅ REQUIRED FIELDS
+        addressLine1: body.addressLine1,
+        addressLine2: body.addressLine2,
+        city: body.city,
+        district: body.district,
       },
     });
 

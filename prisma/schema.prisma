@@ -47,7 +47,12 @@ model Caregiver {
   nic              String              @unique
   gender           Gender
   dateOfBirth      DateTime
-  address          String
+  // address          String
+  secondaryPhone   String?
+  addressLine1     String
+  addressLine2     String?
+  city             String
+  postalCode       String?
   district         District
   experienceYears  Int
   bio              String?
@@ -89,11 +94,11 @@ model Caregiver {
   // =============================
   // VERIFICATION & SAFETY
   // =============================
-  isIdentityVerified    Boolean   @default(false) // NEW
-  isBackgroundChecked   Boolean   @default(false) // NEW
-  backgroundCheckDate   DateTime? // NEW
-  emergencyContactName  String? // NEW
-  emergencyContactPhone String? // NEW
+  isIdentityVerified  Boolean   @default(false) // NEW
+  isBackgroundChecked Boolean   @default(false) // NEW
+  backgroundCheckDate DateTime? // NEW
+  // emergencyContactName  String? // NEW
+  // emergencyContactPhone String? // NEW
 
   // =============================
   // RATING & PERFORMANCE
@@ -116,8 +121,9 @@ model Caregiver {
 
 model CaregiverDocument {
   id          String       @id @default(uuid())
-  caregiverId String       @unique
+  caregiverId String
   type        DocumentType
+  description String? // Optional description of the document
   fileUrl     String
   verified    Boolean      @default(false)
   createdAt   DateTime     @default(now())
@@ -371,13 +377,45 @@ model Booking {
   caregiverId String
   elderId     String
 
-  startTime DateTime
-  endTime   DateTime
+  // =============================
+  // TIME (CORE LOGIC)
+  // =============================
+  startDateTime DateTime
+  endDateTime   DateTime
 
   status BookingStatus @default(PENDING)
 
   notes String?
 
+  // =============================
+  // CARE DETAILS
+  // =============================
+  requiresFullTimeCare  Boolean @default(false)
+  requiresNightCare     Boolean @default(false)
+  requiresPhysiotherapy Boolean @default(false)
+  requiresSpecialDiet   Boolean @default(false)
+
+  // =============================
+  // LOCATION
+  // =============================
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  district     District
+
+  // =============================
+  // TRACKING
+  // =============================
+  acceptedAt  DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
+  cancelledAt DateTime?
+
+  cancellationReason String?
+
+  // =============================
+  // SYSTEM
+  // =============================
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
