@@ -126,10 +126,14 @@ export const careGiverProfileController = async (
         lastName: data.lastName,
         nameWithInitials: data.nameWithInitials,
         phone: data.phone,
+        secondaryPhone: data.secondaryPhone,
         nic: data.nic,
         gender: data.gender,
-        dateOfBirth: data.dateOfBirth,
-        address: data.address,
+        dateOfBirth: new Date(data.dateOfBirth),
+        addressLine1: data.addressLine1,
+        addressLine2: data.addressLine2,
+        postalCode: data.postalCode,
+        city: data.city,
         district: data.district,
         experienceYears: data.experienceYears,
         bio: data.bio,
@@ -160,8 +164,8 @@ export const careGiverProfileController = async (
         // AVAILABILITY
         // =============================
         isAvailable: data.isAvailable ?? true, // NEW
-        availableFrom: data.availableFrom, // NEW
-        availableTo: data.availableTo, // NEW
+        availableFrom: data.availableFrom ? new Date(data.availableFrom) : null,
+        availableTo: data.availableTo ? new Date(data.availableTo) : null,
         availableForNight: data.availableForNight ?? false, // NEW
         availableForFullTime: data.availableForFullTime ?? false, // NEW
 
@@ -171,8 +175,8 @@ export const careGiverProfileController = async (
         isIdentityVerified: data.isIdentityVerified ?? false, // NEW
         isBackgroundChecked: data.isBackgroundChecked ?? false, // NEW
         backgroundCheckDate: data.backgroundCheckDate, // NEW
-        emergencyContactName: data.emergencyContactName, // NEW
-        emergencyContactPhone: data.emergencyContactPhone, // NEW
+        // emergencyContactName: data.emergencyContactName, // NEW
+        // emergencyContactPhone: data.emergencyContactPhone, // NEW
 
         // =============================
         // RATING & PERFORMANCE (admin controlled)

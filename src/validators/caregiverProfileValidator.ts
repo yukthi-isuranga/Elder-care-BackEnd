@@ -86,7 +86,11 @@ const caregiverProfileSchema = z.object({
 
   dateOfBirth: dateOfBirthSchema,
 
-  address: z.string().min(1, 'Address is required'),
+  // address: z.string().min(1, 'Address is required'),
+  addressLine1: z.string().min(1, 'Address Line 1 is required'),
+  addressLine2: z.string().optional(),
+  postalCode: z.string().optional(),
+  city: z.string().min(1, 'City is required'),
 
   district: z.enum(District, {
     error: 'Please select a valid district',
@@ -149,11 +153,11 @@ const caregiverProfileSchema = z.object({
   isIdentityVerified: z.boolean().default(false), // NEW
   isBackgroundChecked: z.boolean().default(false), // NEW
   backgroundCheckDate: z.coerce.date().optional(), // NEW
-  emergencyContactName: z.string().max(100).optional(), // NEW
-  emergencyContactPhone: z
-    .string()
-    .regex(/^(?:\+94|0)7[0-9]{8}$/, 'Invalid Sri Lankan phone number')
-    .optional(), // NEW
+  // emergencyContactName: z.string().max(100).optional(), // NEW
+  // emergencyContactPhone: z
+  //   .string()
+  //   .regex(/^(?:\+94|0)7[0-9]{8}$/, 'Invalid Sri Lankan phone number')
+  //   .optional(), // NEW
 
   // =============================
   // RATING & PERFORMANCE

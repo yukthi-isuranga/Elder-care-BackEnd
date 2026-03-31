@@ -5,6 +5,7 @@ export type CaregiverBasicInfo = {
   lastName: string;
   nameWithInitials?: string;
   phone: string;
+  secondaryPhone?: string;
   gender: 'MALE' | 'FEMALE';
   dateOfBirth: string; // ISO string
   nic: string;
@@ -76,7 +77,11 @@ export type CaregiverPerformance = {
 export type CaregiverAddress = {
   // line1: string;
   // line2?: string;
-  address: string;
+  // address: string;
+  addressLine1: string;
+  addressLine2?: string;
+  postalCode?: string;
+  city: string;
   district: District;
   // province: string;
   // postalCode?: string;
