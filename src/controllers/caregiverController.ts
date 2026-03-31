@@ -4,6 +4,7 @@ import { District, Gender, User } from '../generated/prisma/client';
 import { prisma } from '../config/prisma';
 import { createCaregiverProfileSchema } from '../validators/caregiverProfileValidator';
 import { createCaregiverVersions } from '../services/versioningService';
+import cloudinary from '../utils/cloudinary.config';
 
 interface CareGiverRequest extends Request {
   user?: User;
@@ -398,6 +399,44 @@ const normalizeDocs = (docs: any[]) => {
     .sort((a, b) => a.fileUrl.localeCompare(b.fileUrl));
 };
 
+// export const createCaregiverDocumentController = async (
+//   req: CareGiverRequest,
+//   res: Response,
+//   next: NextFunction,
+// ) => {
+//   try {
+//     const userData = req.user;
+//     const data = req.body;
+
+//     const caregiverData = await prisma.caregiver.findUnique({
+//       where: { userId: userData?.id },
+//     });
+//     if (!caregiverData) {
+//       return res.status(400).json({
+//         message: 'Caregiver data Not found...!!!',
+//       });
+//     }
+
+//     const caregiverDocument = await prisma.caregiverDocument.create({
+//       data: { caregiverId: caregiverData.id, ...data },
+//     });
+
+//     if (!caregiverDocument) {
+//       return res.status(400).json({
+//         message: 'Caregiver Document Not Created...!!!',
+//       });
+//     }
+//     return res.status(200).json({
+//       message: 'Caregiver Document Created...!!!',
+//       caregiverDocument,
+//     });
+//   } catch (error) {
+//     return res.status(400).json({
+//       error,
+//     });
+//   }
+// };
+
 export const createCaregiverDocumentController = async (
   req: CareGiverRequest,
   res: Response,
@@ -405,33 +444,112 @@ export const createCaregiverDocumentController = async (
 ) => {
   try {
     const userData = req.user;
-    const data = req.body;
+    const file = req.file; // 👈 from multer
+    const { type } = req.body;
 
+    if (!userData?.id) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    if (!file) {
+      return res.status(400).json({ message: 'File is required' });
+    }
+
+    if (!type) {
+      return res.status(400).json({ message: 'Document type is required' });
+    }
+
+    // ✅ Validate document type
+    const allowedTypes = ['NIC', 'CERTIFICATE', 'POLICE_REPORT'];
+    if (!allowedTypes.includes(type)) {
+      return res.status(400).json({ message: 'Invalid document type' });
+    }
+
+    // ✅ Find caregiver
     const caregiverData = await prisma.caregiver.findUnique({
-      where: { userId: userData?.id },
+      where: { userId: userData.id },
     });
+
     if (!caregiverData) {
       return res.status(400).json({
-        message: 'Caregiver data Not found...!!!',
+        message: 'Caregiver data not found',
       });
     }
 
-    const caregiverDocument = await prisma.caregiverDocument.create({
-      data: { caregiverId: caregiverData.id, ...data },
+    // ✅ Validate file type
+    const allowedMimeTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'application/pdf',
+    ];
+
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      return res.status(400).json({
+        message: 'Invalid file type. Only images and PDFs allowed',
+      });
+    }
+
+    // ✅ Upload to Cloudinary
+    const uploadResult: any = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          folder: 'caregivers',
+          resource_type: 'auto', // 👈 supports image + pdf
+          public_id: `${userData.id}_${type}`, // optional naming
+          overwrite: true, // replace if re-upload
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        },
+      );
+
+      stream.end(file.buffer);
     });
 
-    if (!caregiverDocument) {
-      return res.status(400).json({
-        message: 'Caregiver Document Not Created...!!!',
-      });
-    }
+    // ✅ Save to DB
+    const caregiverDocument = await prisma.caregiverDocument.create({
+      data: {
+        caregiverId: caregiverData.id,
+        type,
+        fileUrl: uploadResult.secure_url,
+        description: req.body.description ?? undefined, // optional description
+      },
+    });
+
+    // 🔥 Bonus Improvement (Optional but pro)
+    // Prevent duplicate uploads: If a document of the same type already exists for this caregiver,
+    // you might want to either update it or reject the upload. Here's how you could implement an upsert logic:
+
+    // await prisma.caregiverDocument.upsert({
+    //   where: {
+    //     caregiverId_type: {
+    //       caregiverId: caregiverData.id,
+    //       type,
+    //     },
+    //   },
+    //   update: {
+    //     fileUrl: uploadResult.secure_url,
+    //     verified: false,
+    //   },
+    //   create: {
+    //     caregiverId: caregiverData.id,
+    //     type,
+    //     fileUrl: uploadResult.secure_url,
+    //   },
+    // });
+
     return res.status(200).json({
-      message: 'Caregiver Document Created...!!!',
+      message: 'Caregiver Document Uploaded Successfully',
       caregiverDocument,
     });
-  } catch (error) {
-    return res.status(400).json({
-      error,
+  } catch (error: any) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: 'Something went wrong',
+      error: error.message,
     });
   }
 };

@@ -13,6 +13,7 @@ import {
   createCaregiverProfileSchema,
   editCaregiverProfileSchema,
 } from '../validators/caregiverProfileValidator';
+import { upload } from '../middlewares/upload';
 
 const router = Router();
 
@@ -31,6 +32,7 @@ router.post(
 // Add CaregiverDocument
 router.post(
   '/profile/document',
+  upload.single('file'), // 👈 IMPORTANT
   validateRequest(careGiverDocumentSchema),
   createCaregiverDocumentController,
 );

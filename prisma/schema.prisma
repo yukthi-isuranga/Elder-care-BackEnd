@@ -121,8 +121,9 @@ model Caregiver {
 
 model CaregiverDocument {
   id          String       @id @default(uuid())
-  caregiverId String       @unique
+  caregiverId String
   type        DocumentType
+  description String? // Optional description of the document
   fileUrl     String
   verified    Boolean      @default(false)
   createdAt   DateTime     @default(now())

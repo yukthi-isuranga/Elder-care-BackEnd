@@ -108,3 +108,5 @@ npx prisma migrate dev --name Caregiver_Document_Version
 npx prisma migrate dev --name Caregiver_Booking
 
 npx prisma migrate dev --name Caregiver_Booking_changes
+
+npx prisma migrate dev --name Caregiver_Booking_changes_v3

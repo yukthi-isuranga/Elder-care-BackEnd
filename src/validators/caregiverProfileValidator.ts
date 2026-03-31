@@ -180,6 +180,7 @@ export const editCaregiverProfileSchema = caregiverProfileSchema.partial();
 
 export const careGiverDocumentSchema = z.object({
   type: z.enum(DocumentType, { error: 'DocumentType is a Enum' }), // enum type
-  fileUrl: z.string({ error: 'Enter valid URL' }).url(), // must be a valid URL
-  verified: z.boolean(),
+  // fileUrl: z.string({ error: 'Enter valid URL' }).url(), // must be a valid URL
+  // files: z.instanceof(File),
+  description: z.string().max(200).optional(),
 });
