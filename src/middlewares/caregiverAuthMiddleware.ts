@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../config/prisma';
-import { User } from '../generated/prisma/client';
+import { User } from '../../prisma/generated/client';
 
 interface CustomData {
   userId: string;
@@ -28,7 +28,7 @@ export const caregiverAuthMiddleware = async (
   if (!token) {
     return res
       .status(401)
-      .json({ message: 'Unauthorized, Caretaker Token was not found...!!!' });
+      .json({ message: 'Unauthorized, CAREGIVER Token was not found...!!!' });
   }
 
   try {

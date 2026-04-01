@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { Elder } from '../types/elder';
-import { User } from '../generated/prisma/client';
+import { User } from '../../prisma/generated/client';
 import { prisma } from '../config/prisma';
 
 interface CareTakerUserData extends Request {

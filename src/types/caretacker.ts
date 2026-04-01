@@ -2,7 +2,11 @@
 // CREATE REQUEST
 // =======================================
 
-import { District, Gender, RelationshipType } from '../generated/prisma/enums';
+import {
+  District,
+  Gender,
+  RelationshipType,
+} from '../../prisma/generated/enums';
 
 export type CaretakerCreateRequest = {
   // Personal Details

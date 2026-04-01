@@ -1,5 +1,5 @@
+import { CaregiverStatus } from '../../prisma/generated/enums';
 import { prisma } from '../config/prisma';
-import { CaregiverStatus } from '../generated/prisma/enums';
 import { normalizeDocs } from '../utils/normalizeDocs';
 
 export const createCaregiverVersions = async (

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node dist/server.js",
-    "dev": "nodemon --watch src --ext ts --exec ts-node src/server.ts",
+    "dev": "nodemon --watch src --ext ts --exec npx ts-node src/server.ts",
     "lint": "eslint 'src/**/*.ts'"
   },
   "keywords": [],
@@ -19,7 +19,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.1.0",
-    "@types/node": "^25.3.0",
+    "@types/node": "^25.5.0",
     "dotenv": "^17.3.1",
     "eslint": "^10.0.1",
     "express": "^5.2.1",

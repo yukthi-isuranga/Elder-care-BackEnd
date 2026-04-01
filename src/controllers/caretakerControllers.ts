@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { User } from '../generated/prisma/client';
+import { User } from '../../prisma/generated/client';
 import { CaretakerCreateRequest } from '../types/caretacker';
 import { prisma } from '../config/prisma';
 

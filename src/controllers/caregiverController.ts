@@ -1,10 +1,11 @@
 import { Errback, NextFunction, Request, Response } from 'express';
-import { CaregiverCreateRequest } from '../types/caregiver';
-import { District, Gender, User } from '../generated/prisma/client';
+import { CaregiverCreateRequest, DocumentType } from '../types/caregiver';
+import { District, Gender, User } from '../../prisma/generated/client';
 import { prisma } from '../config/prisma';
 import { createCaregiverProfileSchema } from '../validators/caregiverProfileValidator';
 import { createCaregiverVersions } from '../services/versioningService';
 import cloudinary from '../utils/cloudinary.config';
+import { object } from 'zod';
 
 interface CareGiverRequest extends Request {
   user?: User;
@@ -460,7 +461,8 @@ export const createCaregiverDocumentController = async (
     }
 
     // ✅ Validate document type
-    const allowedTypes = ['NIC', 'CERTIFICATE', 'POLICE_REPORT'];
+    // const allowedTypes = ['NIC', 'CERTIFICATE', 'POLICE_REPORT', 'OTHER'];
+    const allowedTypes = Object.values(DocumentType); // if you have an enum in TypeScript, this is cleaner
     if (!allowedTypes.includes(type)) {
       return res.status(400).json({ message: 'Invalid document type' });
     }
@@ -542,6 +544,55 @@ export const createCaregiverDocumentController = async (
 
     return res.status(200).json({
       message: 'Caregiver Document Uploaded Successfully',
+      caregiverDocument,
+    });
+  } catch (error: any) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: 'Something went wrong',
+      error: error.message,
+    });
+  }
+};
+
+// Get CareGiver Documents
+export const getCaregiverDocumentController = async (
+  req: CareGiverRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userData = req.user;
+
+    if (!userData?.id) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    // ✅ Find caregiver
+    const caregiverData = await prisma.caregiver.findUnique({
+      where: { userId: userData.id },
+    });
+
+    if (!caregiverData) {
+      return res.status(400).json({
+        message: 'Caregiver data not found',
+      });
+    }
+
+    // ✅ Find From DB
+    const caregiverDocument = await prisma.caregiverDocument.findMany({
+      where: { caregiverId: caregiverData.id },
+    });
+
+    if (!caregiverDocument) {
+      return res.status(404).json({
+        message: 'No documents found for this caregiver',
+      });
+    }
+
+    return res.status(200).json({
+      message: 'Caregiver Documents found Successfully.',
       caregiverDocument,
     });
   } catch (error: any) {

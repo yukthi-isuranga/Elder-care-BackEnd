@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  output   = "./generated"
 }
 
 datasource db {
@@ -143,6 +143,7 @@ enum DocumentType {
   NIC
   CERTIFICATE
   POLICE_REPORT
+  OTHER
 }
 
 enum District {

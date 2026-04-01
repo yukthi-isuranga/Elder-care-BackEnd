@@ -110,3 +110,21 @@ npx prisma migrate dev --name Caregiver_Booking
 npx prisma migrate dev --name Caregiver_Booking_changes
 
 npx prisma migrate dev --name Caregiver_Booking_changes_v3
+
+npx prisma migrate dev --name Caregiver_Document_Datatype_attribute_change
+
+
+
+UI → FileUpload → File
+        ↓
+React Hook Form → files: File
+        ↓
+FormData.append('file', file)
+        ↓
+Axios multipart/form-data
+        ↓
+Express (upload.single('file'))
+        ↓
+Cloudinary → URL
+        ↓
+DB save
