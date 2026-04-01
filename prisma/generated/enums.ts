@@ -41,7 +41,8 @@ export type CaregiverStatus = (typeof CaregiverStatus)[keyof typeof CaregiverSta
 export const DocumentType = {
   NIC: 'NIC',
   CERTIFICATE: 'CERTIFICATE',
-  POLICE_REPORT: 'POLICE_REPORT'
+  POLICE_REPORT: 'POLICE_REPORT',
+  OTHER: 'OTHER'
 } as const
 
 export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType]

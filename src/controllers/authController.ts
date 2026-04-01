@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../config/prisma';
 import bcrypt from 'bcrypt';
 import { generateToken } from '../../prisma/utils/genarateToken';
-import { User } from '../generated/prisma/client';
+import { User } from '../../prisma/generated/client';
 
 export const registerController = async (
   req: Request,

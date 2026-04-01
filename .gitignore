@@ -3,6 +3,14 @@ node_modules/
 jspm_packages/
 web_modules/
 
+# Prisma
+# This handles the generated engine and types if they are outside node_modules
+.prisma
+/prisma/migrations-lock.toml
+# Ignore local SQLite databases
+*.db
+*.db-journal
+
 # Logs and Debug
 logs
 *.log
@@ -10,21 +18,30 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+.pnpm-debug.log*
 .nyc_output
 
 # Environment Variables
+# Use a wildcard to catch .env.local, .env.development, etc.
 .env
-.env.test
+.env.*
+!.env.example
 
 # Build and Cache
-dist
-build/Release
-.cache
+dist/
+build/
+bin/
+obj/
+out/
+.cache/
 .parcel-cache
 .next
 .nuxt
 .eslintcache
 *.tsbuildinfo
 
-# IDE/Editor
-.vscode-test
+# IDE / Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

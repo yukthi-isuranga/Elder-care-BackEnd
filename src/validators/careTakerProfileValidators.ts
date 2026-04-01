@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { District } from '../types/caregiver';
-import { RelationshipType } from '../generated/prisma/enums';
 import { dateOfBirthSchema } from './caregiverProfileValidator';
+import { RelationshipType } from '../../prisma/generated/enums';
 
 const careTakerProfileSchema = z.object({
   firstName: z.string().min(1, 'Fist name is required'),

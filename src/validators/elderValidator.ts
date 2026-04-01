@@ -1,10 +1,6 @@
 import * as z from 'zod';
-import {
-  BloodGroup,
-  Gender,
-  MobilityLevel,
-  RiskLevel,
-} from '../generated/prisma/enums';
+import { Gender } from '../types/userTypes';
+import { BloodGroup, MobilityLevel, RiskLevel } from '../types/elder';
 
 const elderSchema = z.object({
   // -----------------------

@@ -165,4 +165,5 @@ export enum DocumentType {
   NIC = 'NIC',
   CERTIFICATE = 'CERTIFICATE',
   POLICE_REPORT = 'POLICE_REPORT',
+  OTHER = 'OTHER',
 }

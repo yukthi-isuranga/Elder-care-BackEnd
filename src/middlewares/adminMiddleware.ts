@@ -1,7 +1,7 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { prisma } from '../config/prisma';
-import { User } from '../generated/prisma/client';
+import { User } from '../../prisma/generated/client';
 
 interface CustomJwtPayload extends JwtPayload {
   userId: string;

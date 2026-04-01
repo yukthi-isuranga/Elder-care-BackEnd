@@ -4,6 +4,7 @@ import {
   careGiverProfileController,
   createCaregiverDocumentController,
   editcareGiverProfileController,
+  getCaregiverDocumentController,
   submitCareGiverProfileController,
 } from '../controllers/caregiverController';
 import { caregiverAuthMiddleware } from '../middlewares/caregiverAuthMiddleware';
@@ -36,6 +37,9 @@ router.post(
   validateRequest(careGiverDocumentSchema),
   createCaregiverDocumentController,
 );
+
+// Get CareGiver Documents
+router.get('/profile/document', getCaregiverDocumentController);
 
 // Edit CareGiver Profile
 router.patch(

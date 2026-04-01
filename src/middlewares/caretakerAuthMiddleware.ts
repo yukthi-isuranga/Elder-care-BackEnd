@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../config/prisma';
-import { User } from '../generated/prisma/client';
+import { User } from '../../prisma/generated/client';
 
 interface CustomData {
   userId: string;
