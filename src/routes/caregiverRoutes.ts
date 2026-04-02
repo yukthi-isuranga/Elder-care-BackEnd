@@ -3,6 +3,7 @@ import {
   caregiverController,
   careGiverProfileController,
   createCaregiverDocumentController,
+  deleteCaregiverDocumentController,
   editcareGiverProfileController,
   getCaregiverDocumentController,
   submitCareGiverProfileController,
@@ -40,6 +41,12 @@ router.post(
 
 // Get CareGiver Documents
 router.get('/profile/document', getCaregiverDocumentController);
+
+// Delete CareGiver Document
+router.delete(
+  '/profile/document/:documentId',
+  deleteCaregiverDocumentController,
+);
 
 // Edit CareGiver Profile
 router.patch(

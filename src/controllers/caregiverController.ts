@@ -5,7 +5,6 @@ import { prisma } from '../config/prisma';
 import { createCaregiverProfileSchema } from '../validators/caregiverProfileValidator';
 import { createCaregiverVersions } from '../services/versioningService';
 import cloudinary from '../utils/cloudinary.config';
-import { object } from 'zod';
 
 interface CareGiverRequest extends Request {
   user?: User;
@@ -498,7 +497,7 @@ export const createCaregiverDocumentController = async (
         {
           folder: 'caregivers',
           resource_type: 'auto', // 👈 supports image + pdf
-          public_id: `${userData.id}_${type}`, // optional naming
+          public_id: `${caregiverData.id}_${type}`, // optional naming
           overwrite: true, // replace if re-upload
         },
         (error, result) => {
@@ -594,6 +593,89 @@ export const getCaregiverDocumentController = async (
     return res.status(200).json({
       message: 'Caregiver Documents found Successfully.',
       caregiverDocument,
+    });
+  } catch (error: any) {
+    console.error(error);
+
+    return res.status(500).json({
+      message: 'Something went wrong',
+      error: error.message,
+    });
+  }
+};
+
+// Delete CareGiver Document
+export const deleteCaregiverDocumentController = async (
+  req: CareGiverRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userData = req.user;
+    const { documentId } = req.params;
+
+    if (!userData?.id) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    // ✅ Find caregiver
+    const caregiverData = await prisma.caregiver.findUnique({
+      where: { userId: userData.id },
+    });
+
+    if (!caregiverData) {
+      return res.status(400).json({
+        message: 'Caregiver data not found',
+      });
+    }
+
+    // ✅ Find document
+    const caregiverDocument = await prisma.caregiverDocument.findUnique({
+      where: { id: documentId.toString() },
+    });
+
+    if (!caregiverDocument) {
+      return res.status(404).json({
+        message: 'Document not found',
+      });
+    }
+
+    // Delete from Cloudinary
+    const url = caregiverDocument.fileUrl;
+
+    const isPdf = url.endsWith('.pdf');
+
+    const resourceType = isPdf ? 'raw' : 'image';
+
+    const publicId = caregiverDocument.fileUrl
+      .split('/')
+      .slice(-2) // 👈 include folder
+      .join('/')
+      .replace(/\.[^/.]+$/, ''); // remove extension
+
+    const cloudinaryResponse = await cloudinary.uploader.destroy(publicId, {
+      resource_type: resourceType,
+    });
+
+    if (
+      cloudinaryResponse.result !== 'ok' &&
+      cloudinaryResponse.result !== 'not found'
+    ) {
+      return res.status(404).json({
+        message: `Cloudinary deletion warning: ${cloudinaryResponse.result} for public_id: ${publicId}`,
+      });
+      // console.warn(
+      //   `Cloudinary deletion warning: ${cloudinaryResponse.result} for public_id: ${publicId}`,
+      // );
+    }
+
+    // ✅ Delete from DB
+    await prisma.caregiverDocument.delete({
+      where: { id: caregiverDocument.id },
+    });
+
+    return res.status(200).json({
+      message: 'Caregiver Document deleted Successfully',
     });
   } catch (error: any) {
     console.error(error);
