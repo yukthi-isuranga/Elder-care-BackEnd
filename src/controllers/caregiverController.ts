@@ -257,6 +257,39 @@ export const editcareGiverProfileController = async (
   }
 };
 
+// Get CareGiver Profile Detils
+export const getCaregiverProfileController = async (
+  req: CareGiverRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userData = req.user;
+
+    if (!userData) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const caregiverProfile = await prisma.caregiver.findUnique({
+      where: { userId: userData.id },
+    });
+
+    if (!caregiverProfile) {
+      return res.status(404).json({ message: 'CareGiver Profile not found' });
+    }
+
+    return res.status(200).json({
+      message: 'CareGiver Profile retrieved successfully',
+      caregiverProfile,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Error retrieving CareGiver Profile',
+      error,
+    });
+  }
+};
+
 export const submitCareGiverProfileController = async (
   req: CareGiverRequest,
   res: Response,
