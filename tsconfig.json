@@ -9,6 +9,6 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
   },
-  "include": ["src", "prisma"],
+  "include": ["src", "prisma", "utils"],
   "exclude": ["node_modules"]
 }

@@ -6,6 +6,7 @@ import {
   deleteCaregiverDocumentController,
   editcareGiverProfileController,
   getCaregiverDocumentController,
+  getCaregiverProfileController,
   submitCareGiverProfileController,
 } from '../controllers/caregiverController';
 import { caregiverAuthMiddleware } from '../middlewares/caregiverAuthMiddleware';
@@ -31,6 +32,16 @@ router.post(
   careGiverProfileController,
 );
 
+// Edit CareGiver Profile
+router.patch(
+  '/profile',
+  validateRequest(editCaregiverProfileSchema),
+  editcareGiverProfileController,
+);
+
+// Get CareGiver Profile Detils
+router.get('/profile', getCaregiverProfileController);
+
 // Add CaregiverDocument
 router.post(
   '/profile/document',
@@ -46,13 +57,6 @@ router.get('/profile/document', getCaregiverDocumentController);
 router.delete(
   '/profile/document/:documentId',
   deleteCaregiverDocumentController,
-);
-
-// Edit CareGiver Profile
-router.patch(
-  '/profile',
-  validateRequest(editCaregiverProfileSchema),
-  editcareGiverProfileController,
 );
 
 // Submit For Approval
