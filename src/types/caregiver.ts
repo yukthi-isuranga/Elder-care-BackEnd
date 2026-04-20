@@ -155,7 +155,7 @@ export enum District {
 export enum CaregiverStatus {
   DRAFT = 'DRAFT', // profile not submitted yet
   SUBMITTED = 'SUBMITTED', // waiting admin review
-  PENDING = 'PENDING', // waiting admin review
+  UNDER_REVIEW = 'UNDER_REVIEW', // admin is looking in to it
   APPROVED = 'APPROVED', // admin approved
   REJECTED = 'REJECTED', // rejected permanently
   CHANGES_REQUIRED = 'CHANGES_REQUIRED', // admin requested changes
