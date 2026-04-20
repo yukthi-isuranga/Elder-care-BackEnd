@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   caregiverController,
+  caregiverDashboardController,
   careGiverProfileController,
   createCaregiverDocumentController,
   deleteCaregiverDocumentController,
@@ -31,6 +32,9 @@ router.post(
   validateRequest(createCaregiverProfileSchema),
   careGiverProfileController,
 );
+
+// Get CareGiver Data. for dashbord. it checks profile, documents, and finally status. and return the status and a message to the frontend.
+router.get('/dashboard', caregiverDashboardController);
 
 // Edit CareGiver Profile
 router.patch(

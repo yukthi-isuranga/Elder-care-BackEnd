@@ -1,6 +1,11 @@
 import { Errback, NextFunction, Request, Response } from 'express';
 import { CaregiverCreateRequest, DocumentType } from '../types/caregiver';
-import { District, Gender, User } from '../../prisma/generated/client';
+import {
+  CaregiverStatus,
+  District,
+  Gender,
+  User,
+} from '../../prisma/generated/client';
 import { prisma } from '../config/prisma';
 import { createCaregiverProfileSchema } from '../validators/caregiverProfileValidator';
 import { createCaregiverVersions } from '../services/versioningService';
@@ -221,6 +226,97 @@ export const careGiverProfileController = async (
     }
 
     next(error); // let global error handler handle the rest
+  }
+};
+
+// Get CareGiver Data. for dashbord
+export const caregiverDashboardController = async (
+  req: CareGiverRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userData = req.user;
+
+    if (!userData) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    // check caregiver profile was avalable or not. if avalable checks documants are avalable or not. and after cheks the profile status and send the response acordingly
+    const caregiverProfile = await prisma.caregiver.findUnique({
+      where: { userId: userData.id },
+      select: {
+        status: true,
+        documents: true,
+      },
+    });
+
+    if (!caregiverProfile) {
+      return res.json({
+        step: 'PROFILE_NOT_CREATED',
+        message: 'Please create caregiver profile',
+      });
+    }
+
+    // check documents
+    if (
+      !caregiverProfile.documents ||
+      caregiverProfile.documents.length === 0
+    ) {
+      return res.json({
+        step: 'DOCUMENTS_MISSING',
+        message: 'Please upload required documents',
+      });
+    }
+
+    switch (caregiverProfile.status) {
+      case CaregiverStatus.DRAFT:
+        return res.json({
+          step: 'PROFILE_INCOMPLETE',
+          message: 'Complete your profile',
+        });
+
+      case CaregiverStatus.SUBMITTED:
+        return res.json({
+          step: 'UNDER_REVIEW',
+          message: 'Your profile is under review',
+        });
+
+      case CaregiverStatus.APPROVED:
+        return res.json({
+          step: 'APPROVED',
+          message: 'You are ready to accept bookings',
+        });
+
+      case CaregiverStatus.REJECTED:
+        return res.json({
+          step: 'REJECTED',
+          message: 'Your profile was rejected. Please update and resubmit',
+        });
+
+      case CaregiverStatus.UNDER_REVIEW:
+        return res.json({
+          step: 'UNDER_REVIEW',
+          message:
+            'Your profile is under review by admin, Please wait for the response',
+        });
+
+      case CaregiverStatus.CHANGES_REQUIRED:
+        return res.json({
+          step: 'CHANGES_REQUIRED',
+          message: 'Your profile needs changes before approval',
+        });
+
+      default:
+        return res.json({
+          step: 'UNKNOWN',
+        });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: 'Error retrieving CareGiver Profile',
+      error,
+    });
   }
 };
 
