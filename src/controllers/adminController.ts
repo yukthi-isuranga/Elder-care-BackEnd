@@ -75,17 +75,79 @@ export const adminGetAllCgApprovalsController = async (
   next: NextFunction,
 ) => {
   try {
-    const allCaraTakersApprovalData = await prisma.caregiver.findMany({
-      where: { status: 'SUBMITTED' },
-    });
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
 
-    if (!allCaraTakersApprovalData) {
+    const skip = (page - 1) * limit;
+
+    // const allCaraTakersApprovalData = await prisma.caregiver.findMany({
+    //   // include: {
+    //   //   documents: true,
+    //   //   caregiverDocumentVersions: true,
+    //   //   caregiverProfileVersions: true,
+    //   // },
+    //   take: limit,
+    //   skip,
+    //   select: {
+    //     id: true,
+    //     firstName: true,
+    //     lastName: true,
+    //     status: true,
+    //     district: true,
+    //     experienceYears: true,
+    //     createdAt: true,
+
+    //     documents: {
+    //       select: {
+    //         id: true,
+    //         verified: true,
+    //       },
+    //     },
+    //   },
+    //   where: { status: 'SUBMITTED' },
+    //   orderBy: { updatedAt: 'desc' },
+    // });
+    const [data, total] = await Promise.all([
+      prisma.caregiver.findMany({
+        take: limit,
+        skip,
+        where: { status: 'SUBMITTED' },
+        orderBy: { updatedAt: 'desc' },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          status: true,
+          district: true,
+          experienceYears: true,
+          createdAt: true,
+          updatedAt: true,
+          documents: {
+            select: {
+              id: true,
+              verified: true,
+            },
+          },
+        },
+      }),
+      prisma.caregiver.count({
+        where: { status: 'SUBMITTED' },
+      }),
+    ]);
+
+    if (data.length === 0) {
       return res.status(400).json({ message: 'No data Found...' });
     }
 
     return res.status(200).json({
-      message: `Admin Get all CareGivers Approvals....`,
-      allCaraTakersApprovalData,
+      message: `Admin Get ${data.length} CareGivers Approvals....`,
+      data,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
     });
   } catch (error) {
     return res.status(400).json({ error });
