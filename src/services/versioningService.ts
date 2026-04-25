@@ -1,10 +1,11 @@
 import { CaregiverStatus } from '../../prisma/generated/enums';
 import { prisma } from '../config/prisma';
+import { CaregiverResponce } from '../types/caregiver-responce';
 import { normalizeDocs } from '../utils/normalizeDocs';
 
 export const createCaregiverVersions = async (
   caregiverId: string,
-  profileData: any,
+  profileData: CaregiverResponce,
   status: CaregiverStatus,
 ) => {
   // PROFILE VERSION
