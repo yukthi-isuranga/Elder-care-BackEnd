@@ -154,6 +154,37 @@ export const adminGetAllCgApprovalsController = async (
   }
 };
 
+// Get Single Approval Data for Admin to watch and audit
+export const adminGetCgFullDataController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const approvalId = req.params.approvalId.toLocaleString();
+
+    const CaraGiverApprovalData = await prisma.caregiver.findUnique({
+      include: {
+        documents: true,
+        caregiverDocumentVersions: true,
+        caregiverProfileVersions: true,
+      },
+      where: { id: approvalId },
+    });
+
+    if (!CaraGiverApprovalData) {
+      return res.status(400).json({ message: 'No data Found...' });
+    }
+
+    return res.status(200).json({
+      message: `Admin Get ${CaraGiverApprovalData.firstName} CareGivers Approvals....`,
+      data: CaraGiverApprovalData,
+    });
+  } catch (error) {
+    return res.status(400).json({ error });
+  }
+};
+
 export const adminGetCgApprovalController = async (
   req: AdminUserData,
   res: Response,
