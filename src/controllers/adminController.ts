@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { User } from '../../prisma/generated/client';
 import { prisma } from '../config/prisma';
 import { createCaregiverVersions } from '../services/versioningService';
+import { sendApprovalEmailJob } from '../jobs/email.job';
 
 interface ApprovalParams {
   approvalId: string;
@@ -218,23 +219,23 @@ export const adminCgApprovalController = async (
 ) => {
   try {
     const adminData = req.user;
-
     const { approvalId } = req.params;
 
-    const CaraTakerApprovalData = await prisma.caregiver.findUnique({
+    const caregiver = await prisma.caregiver.findUnique({
       where: { id: approvalId.toString() },
+      include: { user: true }, // 👈 IMPORTANT (to get email)
     });
 
-    if (!CaraTakerApprovalData) {
-      return res.status(400).json({ message: 'No data Found...', approvalId });
+    if (!caregiver) {
+      return res.status(400).json({ message: 'No data Found...' });
     }
-    if (CaraTakerApprovalData.status !== 'SUBMITTED') {
+    if (caregiver.status !== 'SUBMITTED') {
       return res
         .status(400)
         .json({ message: 'Request was not Submitted Status...' });
     }
 
-    // Time to APPROVE
+    // ✅ DB update // Time to APPROVE
     const approveData = await prisma.caregiver.update({
       where: { id: approvalId.toString() },
       data: {
@@ -247,17 +248,32 @@ export const adminCgApprovalController = async (
     if (!approveData) {
       return res.status(400).json({ message: 'Request was not Approved...' });
     }
-    // First, get the last version number (if any)
-    const versionData = await createCaregiverVersions(
+
+    // ✅ Versioning // First, get the last version number (if any)
+    // const versionData = await createCaregiverVersions(
+    //   approvalId.toString(),
+    //   approveData,
+    //   approveData.status,
+    // );
+    await createCaregiverVersions(
       approvalId.toString(),
       approveData,
       approveData.status,
     );
 
+    console.log('📨 Adding email job to queue...');
+
+    // 🚀 ASYNC EMAIL (BullMQ)
+    await sendApprovalEmailJob({
+      // to: caregiver.user.email,
+      to: 'yukthiisuranga111@gmail.com',
+      name: caregiver.firstName,
+    });
+    console.log('✅ Job added');
+
     return res.status(200).json({
-      message: `Admin Get all CareGivers Approvals....`,
-      CaraTakerApprovalData,
-      versionData,
+      message: 'Caregiver Approved Successfully',
+      data: approveData,
     });
   } catch (error) {
     return res.status(400).json({ error });
